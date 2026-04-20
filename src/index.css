@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-app-bg: #0e0e0e;
+  --color-panel: #111111;
+  --color-panel-soft: #151515;
+  --color-border-subtle: #333333;
+  --color-blue-glow: #3b82f6;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
