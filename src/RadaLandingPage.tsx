@@ -1,479 +1,378 @@
-import { navigateToRoute, scrollToSection } from "./siteNavigation";
+import { useState, type FormEvent } from "react";
 import RadaLogoMark from "./components/RadaLogoMark";
 import RadaWordmark from "./components/RadaWordmark";
-import { useAuth } from "./lib/useAuth";
-import { useSubscription } from "./lib/useSubscription";
+
+// Formspree endpoint for waitlist signups. Swap in the real form id
+// via VITE_FORMSPREE_URL before launch \u2014 placeholder accepts but
+// drops submissions.
+const FORMSPREE_URL =
+  import.meta.env.VITE_FORMSPREE_URL ?? "https://formspree.io/f/placeholder";
+
+type FormState = "idle" | "submitting" | "success" | "error";
 
 type FeatureCard = {
+  icon: "memory" | "team" | "review";
   title: string;
   description: string;
-  icon: "hybrid" | "routing" | "blueprint";
 };
-
-type PricingTier = {
-  name: string;
-  price: string;
-  description: string;
-  footnote?: string;
-  cta: string;
-  featured?: boolean;
-  route: "workspace" | "enterprise";
-  buttonVariant?: "default" | "featured" | "ghost";
-  // Set for Pro/Ultra so the CTA drives a Creem checkout (after sign-in)
-  // instead of just dropping the user into the workspace.
-  paidTier?: "Pro" | "Ultra";
-};
-
-type PricingTierDefinition =
-  | (Omit<PricingTier, "price"> & {
-      priceType: "label";
-      priceLabel: string;
-    })
-  | (Omit<PricingTier, "price"> & {
-      priceType: "monthly";
-      monthlyPrice: number;
-    });
 
 const featureCards: FeatureCard[] = [
   {
-    title: "Hybrid Context Engine",
+    icon: "memory",
+    title: "Persistent session memory",
     description:
-      "Run local models for free, private refactoring. Route to the cloud for massive architectures.",
-    icon: "hybrid",
+      "Context, decisions, and code patterns survive session restarts. Pick up exactly where you left off \u2014 every time.",
   },
   {
-    title: "Intent-Driven Routing",
+    icon: "team",
+    title: "Team context sharing",
     description:
-      "Tell us what you want to build. We pick the perfect model and context window.",
-    icon: "routing",
+      "Shared memory across your engineering team. Everyone's AI assistant knows the same architecture, the same rules, the same codebase.",
   },
   {
-    title: "Viral Blueprints",
+    icon: "review",
+    title: "Codebase-aware review",
     description:
-      "Export your software architectures as shareable JSON blueprints.",
-    icon: "blueprint",
+      "Code review that understands your conventions, not just syntax. Rada flags drift from your team's patterns before it ships.",
   },
 ];
 
-const pricingTierDefinitions: PricingTierDefinition[] = [
+type ComparisonRow = {
+  feature: string;
+  competitors: string;
+  rada: string;
+};
+
+const comparisonRows: ComparisonRow[] = [
   {
-    name: "Developer",
-    priceType: "label" as const,
-    priceLabel: "Free*",
-    description:
-      "Bring your own OpenRouter key. Free local compute. Community blueprints.",
-    footnote: "* Cloud routing with your own API key.",
-    cta: "Get Started",
-    route: "workspace",
-    buttonVariant: "default",
+    feature: "Cross-session memory",
+    competitors: "Resets on close",
+    rada: "Always on",
   },
   {
-    name: "Rada Pro",
-    priceType: "monthly" as const,
-    monthlyPrice: 19,
-    description:
-      "Zero setup. 20 Daily Cloud Burst with a 0.5x burn rate on Autorouter routes. Managed routing.",
-    cta: "Start 14-Day Trial",
-    featured: true,
-    route: "workspace",
-    buttonVariant: "featured",
-    paidTier: "Pro",
+    feature: "Team-shared context",
+    competitors: "Per-developer only",
+    rada: "Synced across team",
   },
   {
-    name: "Ultra",
-    priceType: "monthly" as const,
-    monthlyPrice: 39,
-    description:
-      "75 Daily Cloud Burst — 2.5× Pro capacity. Priority heavyweight routing for larger builds and power users.",
-    cta: "Go Ultra",
-    route: "workspace",
-    buttonVariant: "ghost",
-    paidTier: "Ultra",
+    feature: "Codebase conventions",
+    competitors: "Must re-explain each time",
+    rada: "Learned once, always applied",
+  },
+  {
+    feature: "Works with your AI tools",
+    competitors: "Siloed",
+    rada: "Layer on top",
   },
 ];
 
 function FeatureIcon({ icon }: { icon: FeatureCard["icon"] }) {
-  if (icon === "hybrid") {
+  const common = {
+    className: "h-[18px] w-[18px] text-[#77c4ff]",
+    fill: "none" as const,
+    stroke: "currentColor",
+    strokeWidth: 1.7,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    viewBox: "0 0 24 24",
+    "aria-hidden": true,
+  };
+
+  if (icon === "memory") {
     return (
-      <svg
-        viewBox="0 0 24 24"
-        className="h-5 w-5 text-[#77c4ff]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M7 7h10v10H7z" />
-        <path d="M3.5 12h3M17.5 12h3M12 3.5v3M12 17.5v3" />
+      <svg {...common}>
+        <path d="M21 12a9 9 0 1 1-3-6.7" />
+        <path d="M21 4v5h-5" />
       </svg>
     );
   }
 
-  if (icon === "routing") {
+  if (icon === "team") {
     return (
-      <svg
-        viewBox="0 0 24 24"
-        className="h-5 w-5 text-[#77c4ff]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M6 6h12" />
-        <path d="M6 12h8" />
-        <path d="M6 18h12" />
-        <path d="m14 10 3 2-3 2" />
+      <svg {...common}>
+        <path d="M7 7h10" />
+        <path d="m14 4 3 3-3 3" />
+        <path d="M17 17H7" />
+        <path d="m10 20-3-3 3-3" />
       </svg>
     );
   }
 
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-5 w-5 text-[#77c4ff]"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M7 5h10v14H7z" />
-      <path d="M10 9h4M10 13h4M10 17h4" />
-      <path d="M4.5 8H7M17 16h2.5" />
+    <svg {...common}>
+      <path d="M4 6h16v12H4z" />
+      <path d="M8 10h8M8 14h5" />
+      <path d="m18 18 2 2" />
     </svg>
   );
 }
 
-function ScreenshotPanel() {
+function CheckIcon() {
   return (
-    <div className="relative mx-auto w-full max-w-5xl">
-      <div className="absolute inset-x-16 -top-8 h-36 rounded-full bg-[#0096C7]/25 blur-3xl md:inset-x-24 md:h-44" />
-      <div className="relative overflow-hidden rounded-[28px] border border-[#333] bg-[#111111] shadow-[0_30px_90px_rgba(0,0,0,0.65)]">
-        <div className="flex items-center justify-between border-b border-[#333] px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-          </div>
-          <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] text-zinc-400">
-            Rada Workspace
-          </div>
-        </div>
-
-        <div className="grid gap-px bg-[#333] md:grid-cols-[220px_minmax(0,1fr)_280px]">
-          <div className="space-y-4 bg-[#101010] p-4">
-            <div className="space-y-2">
-              <div className="text-[10px] uppercase tracking-[0.24em] text-zinc-500">
-                Intent
-              </div>
-              <div className="rounded-2xl bg-white/[0.03] p-3">
-                <div className="text-sm font-medium text-white">Build from scratch</div>
-                <div className="mt-2 text-xs leading-5 text-zinc-400">
-                  Claude 3.5 Sonnet routed for complex architecture and broader planning.
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="text-[10px] uppercase tracking-[0.24em] text-zinc-500">
-                Context
-              </div>
-              <div className="space-y-2 rounded-2xl bg-white/[0.03] p-3">
-                <div className="rounded-xl bg-[#171717] px-3 py-2 text-xs text-zinc-300">
-                  Local micro-model ready
-                </div>
-                <div className="rounded-xl bg-[#171717] px-3 py-2 text-xs text-zinc-300">
-                  4 project files indexed
-                </div>
-                <div className="rounded-xl bg-[#171717] px-3 py-2 text-xs text-zinc-300">
-                  Exportable JSON blueprint
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#131313] p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="rounded-full border border-[#0096C7]/20 bg-[#0096C7]/10 px-3 py-1 text-[11px] font-medium text-[#77c4ff]">
-                Intent-driven workspace
-              </div>
-              <div className="text-xs text-zinc-500">Hybrid mode</div>
-            </div>
-
-            <div className="space-y-3 rounded-[22px] border border-white/5 bg-[#161616] p-4">
-              <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-                Blueprint preview
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#0f0f0f]">
-                <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
-                  <div className="text-sm font-medium text-white">App Architecture</div>
-                  <div className="text-xs text-zinc-500">JSON</div>
-                </div>
-                <div className="space-y-2 px-4 py-4 text-xs leading-6 text-zinc-400">
-                  <div>{"{"}</div>
-                  <div className="pl-4">"intent": "buildFromScratch",</div>
-                  <div className="pl-4">"router": "hybrid",</div>
-                  <div className="pl-4">"cloudModel": "claude-3.5-sonnet",</div>
-                  <div className="pl-4">"localModel": "qwen2.5-coder:7b"</div>
-                  <div>{"}"}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4 bg-[#101010] p-4">
-            <div className="space-y-2">
-              <div className="text-[10px] uppercase tracking-[0.24em] text-zinc-500">
-                Routing
-              </div>
-              <div className="rounded-2xl bg-white/[0.03] p-3">
-                <div className="text-sm font-medium text-white">Rada Pro Router</div>
-                <div className="mt-2 text-xs leading-5 text-zinc-400">
-                  Dynamic handoff between local micro-models and Claude, Gemini, or standard cloud lanes.
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-[#0096C7]/15 bg-gradient-to-br from-[#0096C7]/10 via-transparent to-transparent p-4">
-              <div className="text-[10px] uppercase tracking-[0.24em] text-[#77c4ff]">
-                Daily Cloud Burst
-              </div>
-              <div className="mt-2 text-2xl font-semibold text-white">19.5 / 20</div>
-              <div className="mt-2 h-1.5 rounded-full bg-white/10">
-                <div className="h-1.5 w-[98%] rounded-full bg-[#0096C7]" />
-              </div>
-              <div className="mt-3 text-xs leading-5 text-zinc-400">
-                Autorouter routes burn at half rate — 20 burst units become 40 effective requests per day.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4 text-[#34d399]"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m4 10 4 4 8-8" />
+    </svg>
   );
 }
 
-function getRegionalPriceLabel() {
-  const locale =
-    typeof navigator !== "undefined" ? navigator.language.toLowerCase() : "en-us";
-  const timeZone =
-    typeof Intl !== "undefined"
-      ? Intl.DateTimeFormat().resolvedOptions().timeZone?.toLowerCase() ?? ""
-      : "";
-
-  if (
-    locale.startsWith("et") ||
-    locale.startsWith("fi") ||
-    locale.startsWith("de") ||
-    locale.startsWith("fr") ||
-    locale.startsWith("es") ||
-    locale.startsWith("it") ||
-    timeZone.startsWith("europe/")
-  ) {
-    return "€19/mo";
-  }
-
-  return "$19/mo";
+function CrossIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4 text-zinc-600"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m5 5 10 10M15 5 5 15" />
+    </svg>
+  );
 }
 
-function getRegionalPrice(amount: number) {
-  const locale =
-    typeof navigator !== "undefined" ? navigator.language.toLowerCase() : "en-us";
-  const timeZone =
-    typeof Intl !== "undefined"
-      ? Intl.DateTimeFormat().resolvedOptions().timeZone?.toLowerCase() ?? ""
-      : "";
+function WaitlistForm({
+  ctaLabel,
+  submittingLabel = "Joining\u2026",
+  successLabel,
+  errorLabel,
+  compact = false,
+}: {
+  ctaLabel: string;
+  submittingLabel?: string;
+  successLabel: string;
+  errorLabel: string;
+  compact?: boolean;
+}) {
+  const [email, setEmail] = useState("");
+  const [state, setState] = useState<FormState>("idle");
 
-  const useEuro =
-    locale.startsWith("et") ||
-    locale.startsWith("fi") ||
-    locale.startsWith("de") ||
-    locale.startsWith("fr") ||
-    locale.startsWith("es") ||
-    locale.startsWith("it") ||
-    timeZone.startsWith("europe/");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed || !trimmed.includes("@")) {
+      setState("error");
+      return;
+    }
+    setState("submitting");
+    try {
+      const res = await fetch(FORMSPREE_URL, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: trimmed }),
+      });
+      if (!res.ok) throw new Error("non-2xx");
+      setState("success");
+    } catch {
+      setState("error");
+    }
+  };
 
-  return `${useEuro ? "€" : "$"}${amount}/mo`;
+  if (state === "success") {
+    return (
+      <div
+        className={`mx-auto flex items-center gap-3 rounded-2xl border border-[#0096C7]/25 bg-[#0096C7]/[0.08] px-4 py-3 text-sm text-[#77c4ff] ${
+          compact ? "max-w-[400px]" : "max-w-[440px]"
+        }`}
+        role="status"
+      >
+        <span aria-hidden="true">\u2726</span>
+        <span>{successLabel}</span>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className={`mx-auto w-full ${compact ? "max-w-[400px]" : "max-w-[440px]"}`}
+    >
+      <div className="flex flex-col gap-2 rounded-2xl border border-[#2e2e35] bg-[#111111] p-1.5 pl-4 transition focus-within:border-[#0096C7] focus-within:shadow-[0_0_0_3px_rgba(0,150,199,0.2)] sm:flex-row sm:items-center sm:gap-2.5">
+        <input
+          type="email"
+          name="email"
+          required
+          autoComplete="email"
+          placeholder="you@yourcompany.com"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (state === "error") setState("idle");
+          }}
+          disabled={state === "submitting"}
+          className="min-w-0 flex-1 border-0 bg-transparent px-0 py-2.5 text-[15px] text-white placeholder:text-zinc-500 focus:outline-none disabled:opacity-60 sm:py-0"
+        />
+        <button
+          type="submit"
+          disabled={state === "submitting"}
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-[#0096C7] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(0,150,199,0.35)] transition hover:-translate-y-px hover:bg-[#00B4D8] hover:shadow-[0_6px_24px_rgba(0,150,199,0.45)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {state === "submitting" ? submittingLabel : ctaLabel}
+        </button>
+      </div>
+      {state === "error" ? (
+        <div
+          className="mt-3 flex items-center gap-2 rounded-xl border border-[#f87171]/25 bg-[#f87171]/[0.08] px-4 py-3 text-sm text-[#f87171]"
+          role="alert"
+        >
+          <span aria-hidden="true">\u2715</span>
+          <span>
+            {errorLabel}{" "}
+            <a
+              href="mailto:jerseyvelvet@protonmail.com"
+              className="underline underline-offset-2 hover:text-[#fca5a5]"
+            >
+              email us
+            </a>{" "}
+            instead.
+          </span>
+        </div>
+      ) : null}
+    </form>
+  );
 }
 
 export default function RadaLandingPage() {
-  const regionalPriceLabel = getRegionalPriceLabel();
-  const pricingTiers: PricingTier[] = pricingTierDefinitions.map((tier) => ({
-    ...tier,
-    price:
-      tier.priceType === "monthly"
-        ? getRegionalPrice(tier.monthlyPrice)
-        : tier.priceLabel,
-  }));
-
-  const { user } = useAuth();
-  const { startCheckout } = useSubscription();
-
-  // Pro/Ultra CTAs: anonymous → sign in (so the Edge Function can attach
-  // the subscription to a user_id); authed → kick off Creem checkout via
-  // the server-side proxy. Free tier and other CTAs keep their prior
-  // workspace-navigation behavior.
-  const handleTierCta = (tier: PricingTier) => {
-    if (!tier.paidTier) {
-      navigateToRoute(tier.route);
-      return;
-    }
-    if (!user) {
-      navigateToRoute("signin");
-      return;
-    }
-    void startCheckout(tier.paidTier);
-  };
-
   return (
-    <main className="min-h-screen bg-[#0e0e0e] text-zinc-100">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[#0096C7]/10 blur-[140px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,150,199,0.08),transparent_28%),linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_30%)]" />
+    <main className="relative min-h-screen overflow-hidden bg-[#0e0e0e] text-zinc-100">
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute left-1/2 top-[-20%] h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(0,150,199,0.14)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,150,199,0.06),transparent_30%)]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-10">
-        <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#d7a22a] bg-[#2a1f00] px-4 py-3 text-sm text-[#f3d88d]">
-          <span className="text-pretty">
-            Caught in the Antigravity price hike? Take back your margins with Rada Hybrid Compute.
-          </span>
-          <button
-            type="button"
-            onClick={() => scrollToSection("pricing")}
-            className="shrink-0 font-medium text-[#f6df9e] transition hover:text-white"
-            aria-label="Jump to pricing"
+      <div className="relative z-10 mx-auto w-full max-w-[760px] px-6">
+        <nav className="flex items-center justify-between pt-7">
+          <a
+            href="#"
+            className="flex items-center gap-3 text-[18px] font-bold tracking-[-0.4px] text-white no-underline"
           >
-            →
-          </button>
-        </div>
-
-        <header className="sticky top-0 z-20 rounded-full border border-[#333] bg-[#0e0e0e]/80 px-4 py-3 backdrop-blur-xl">
-          <nav className="flex items-center justify-between gap-4">
-            <button
-              type="button"
-              onClick={() => navigateToRoute("landing")}
-              className="flex items-center gap-3 border-0 bg-transparent p-0 text-left"
-            >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_32px_rgba(0,150,199,0.18)]">
-                <RadaLogoMark className="h-9 w-9 object-contain select-none" />
-              </div>
-              <RadaWordmark
-                className="h-14 w-[188px] object-contain select-none sm:w-[208px]"
-                showMark={false}
-              />
-            </button>
-
-            <div className="hidden items-center gap-8 text-sm text-zinc-400 md:flex">
-              <button
-                type="button"
-                onClick={() => scrollToSection("features")}
-                className="transition hover:text-white"
-              >
-                Features
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollToSection("pricing")}
-                className="transition hover:text-white"
-              >
-                Pricing
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateToRoute("enterprise")}
-                className="transition hover:text-white"
-              >
-                Enterprise
-              </button>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_24px_rgba(0,150,199,0.2)]">
+              <RadaLogoMark className="h-7 w-7 object-contain select-none" />
             </div>
+            <RadaWordmark
+              className="h-9 w-[110px] object-contain select-none"
+              showMark={false}
+            />
+          </a>
+          <span className="rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-500">
+            Private beta &middot; 2026
+          </span>
+        </nav>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => navigateToRoute(user ? "workspace" : "signin")}
-                className="hidden text-sm text-zinc-400 transition hover:text-white sm:inline-flex"
-              >
-                {user ? "Open Workspace" : "Sign In"}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateToRoute("workspace")}
-                aria-label="Download for macOS, Windows, and Linux"
-                className="inline-flex items-center justify-center rounded-full border border-[#0096C7]/30 bg-[#0096C7] px-4 py-2 text-sm font-medium text-white shadow-[0_0_30px_rgba(0,150,199,0.28)] transition hover:bg-[#00B4D8]"
-              >
-                Download for Desktop
-              </button>
-            </div>
-          </nav>
-        </header>
-
-        <section className="flex flex-1 flex-col justify-center py-16 sm:py-20 lg:py-24">
-          <div className="mx-auto flex w-full max-w-4xl flex-col items-center text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#333] bg-white/[0.03] px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-[#77c4ff]">
-              Intent-aware routing for local and cloud AI
-            </div>
-
-            <h1 className="max-w-4xl text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-7xl">
-              Tell us what to build. The AI workspace for the next million founders.
-            </h1>
-
-            <p className="mt-6 max-w-3xl text-pretty text-base leading-8 text-zinc-400 sm:text-lg">
-              Stop fighting with API keys and context windows. Rada routes your
-              intent across local micro-models and cloud heavyweights like Claude
-              3.5 seamlessly.
-            </p>
-
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => navigateToRoute("workspace")}
-                className="inline-flex min-w-[220px] items-center justify-center rounded-full border border-[#00B4D8]/40 bg-[#0096C7] px-6 py-3 text-sm font-semibold text-white shadow-[0_0_48px_rgba(0,150,199,0.38),0_18px_40px_rgba(0,0,0,0.42)] transition hover:-translate-y-0.5 hover:bg-[#00B4D8]"
-              >
-                Start Building Free
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollToSection("features")}
-                className="inline-flex min-w-[220px] items-center justify-center rounded-full border border-[#333] bg-white/[0.03] px-6 py-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:bg-white/[0.05]"
-              >
-                View Documentation
-              </button>
-            </div>
+        <section className="py-20 text-center sm:py-24">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.1] px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-[#77c4ff]">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#77c4ff]" />
+            Now accepting early access
           </div>
 
-          <div className="mt-16 sm:mt-20">
-            <ScreenshotPanel />
+          <h1 className="bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(38px,6vw,58px)] font-extrabold leading-[1.1] tracking-[-1.5px] text-transparent">
+            Rada remembers what
+            <br />
+            every other AI forgets.
+          </h1>
+
+          <p className="mx-auto mb-12 mt-5 max-w-[480px] text-[18px] leading-[1.65] text-zinc-500">
+            Cursor, Claude&nbsp;Code, and Codex all lose context when the session
+            ends.{" "}
+            <strong className="font-medium text-zinc-200">
+              Rada persists memory across sessions and teams
+            </strong>{" "}
+            \u2014 so your AI assistant actually knows your codebase.
+          </p>
+
+          <WaitlistForm
+            ctaLabel="Join the waitlist"
+            successLabel="You're on the list \u2014 we'll be in touch soon."
+            errorLabel="Something went wrong. Try"
+          />
+
+          <p className="mt-3 text-xs text-zinc-500">
+            No spam. Unsubscribe any time.
+          </p>
+
+          <div className="mt-10 flex items-center justify-center gap-3 text-[13px] text-zinc-500">
+            <div className="flex">
+              <div className="-mr-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#0096C7] to-[#005f80] text-[11px] font-bold text-white">
+                EK
+              </div>
+              <div className="-mr-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#34d399] to-[#059669] text-[11px] font-bold text-white">
+                JS
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#fb923c] to-[#ea580c] text-[11px] font-bold text-white">
+                MR
+              </div>
+            </div>
+            <span>
+              <span className="font-semibold text-zinc-200">Developers</span> on
+              the waitlist \u2014 shipping Q3&nbsp;2026
+            </span>
           </div>
         </section>
 
-        <section id="features" className="py-16 sm:py-20">
-          <div className="mb-10 flex flex-col gap-4 sm:mb-14">
-            <div className="text-sm font-medium uppercase tracking-[0.28em] text-[#77c4ff]">
-              Features
-            </div>
-            <div className="max-w-2xl text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-              A workspace that feels local-first, but scales like a cloud platform.
-            </div>
+        <section className="relative my-[72px] overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-9">
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#0096C7] to-transparent" />
+          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+            The problem
           </div>
+          <p className="max-w-[580px] text-[17px] leading-[1.7] text-zinc-200">
+            You close the window.{" "}
+            <em className="not-italic text-[#77c4ff]">It forgets everything.</em>
+            <br />
+            Every AI session starts from scratch \u2014 your architecture decisions,
+            your naming conventions, your team's unwritten rules. You spend more
+            time re-explaining your codebase than writing code.
+          </p>
+          <pre className="mt-5 overflow-x-auto rounded-[10px] border border-[#1f1f23] bg-white/[0.03] px-4 py-3.5 font-mono text-xs leading-[1.8] text-zinc-500">
+            <span className="text-[#546e7a]"># What you tell your AI assistant every. single. day.</span>
+            {"\n"}
+            <span className="text-[#546e7a]"># "As a reminder, we use PostgreSQL not MySQL..."</span>
+            {"\n"}
+            <span className="text-[#546e7a]"># "As a reminder, auth is handled by the middleware layer..."</span>
+            {"\n"}
+            <span className="text-[#546e7a]"># "As a reminder, don't touch the legacy billing module..."</span>
+            {"\n\n"}
+            <span className="text-[#82aaff]">rada</span>
+            <span>.</span>
+            <span className="text-[#c792ea]">remember</span>
+            <span>(</span>
+            <span className="text-[#c3e88d]">"everything"</span>
+            <span>)</span>
+            {"  "}
+            <span className="text-[#546e7a]"># once</span>
+          </pre>
+        </section>
 
-          <div className="grid gap-5 lg:grid-cols-3">
+        <section className="mb-20">
+          <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+            What Rada does
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {featureCards.map((feature) => (
               <article
                 key={feature.title}
-                className="group rounded-[28px] border border-[#333] bg-[#121212] p-6 transition hover:border-[#0096C7]/30 hover:bg-[#151515]"
+                className="group rounded-[16px] border border-[#1f1f23] bg-[#111113] p-6 transition hover:-translate-y-0.5 hover:border-[#2e2e35]"
               >
-                <div className="mb-5 inline-flex rounded-2xl border border-white/8 bg-white/[0.03] p-3">
+                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#0096C7]/15">
                   <FeatureIcon icon={feature.icon} />
                 </div>
-                <h2 className="text-xl font-semibold tracking-[-0.03em] text-white">
+                <h2 className="mb-2 text-[15px] font-semibold tracking-[-0.2px] text-white">
                   {feature.title}
                 </h2>
-                <p className="mt-3 text-sm leading-7 text-zinc-400">
+                <p className="text-sm leading-[1.6] text-zinc-500">
                   {feature.description}
                 </p>
               </article>
@@ -481,134 +380,93 @@ export default function RadaLandingPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-20">
-          <div className="grid gap-8 rounded-[32px] border border-[#333] bg-[#121212] px-6 py-8 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-            <div className="space-y-4">
-              <div className="text-sm font-medium uppercase tracking-[0.28em] text-[#77c4ff]">
-                Why Rada?
-              </div>
-              <h2 className="max-w-sm text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-                Keep the fast path local. Pay for cloud only when the work demands it.
-              </h2>
-            </div>
-
-            <div className="rounded-[24px] border border-white/6 bg-white/[0.03] p-6">
-              <p className="text-base leading-8 text-zinc-300 sm:text-lg">
-                Stop paying the &quot;Cloud Tax&quot; for every keystroke. While cloud-only IDEs
-                force you into unpredictable, floating price hikes for basic refactoring, Rada
-                runs local micro-models for free. We only route to premium cloud models when your
-                architecture demands it. Predictable {regionalPriceLabel} pricing. Zero surprise
-                bills.
-              </p>
-            </div>
+        <section className="mb-20">
+          <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+            How Rada compares
           </div>
-        </section>
-
-        <section
-          id="pricing"
-          className="border-t border-[#222] py-16 sm:py-20"
-        >
-          <div className="mx-auto flex max-w-3xl flex-col items-start text-left">
-            <div className="text-sm font-medium uppercase tracking-[0.28em] text-[#77c4ff]">
-              Pricing
-            </div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-              Start free, then upgrade when you want managed routing and burst capacity.
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-zinc-400">
-              The free tier is ideal for developer-led exploration. Rada Pro is
-              built for teams, individuals, founders, and fast-moving product
-              loops with daily cloud capacity and discounted Autorouter burn.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {pricingTiers.map((tier) => (
-            <article
-              key={tier.name}
-              className={`rounded-[28px] border p-6 ${
-                tier.featured
-                  ? "border-[#0096C7]/40 bg-gradient-to-b from-[#0096C7]/10 via-[#141414] to-[#111111] shadow-[0_0_50px_rgba(0,150,199,0.14)]"
-                  : "border-[#333] bg-[#121212]"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-sm font-medium uppercase tracking-[0.24em] text-zinc-500">
-                    {tier.name}
-                  </div>
-                  <div className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">
-                    {tier.price.endsWith("*") ? (
-                      <>
-                        {tier.price.slice(0, -1)}
-                        <sup className="ml-0.5 align-top text-base text-zinc-400">*</sup>
-                      </>
-                    ) : (
-                      tier.price
-                    )}
-                  </div>
-                </div>
-                {tier.featured ? (
-                  <div className="rounded-full border border-[#0096C7]/20 bg-[#0096C7]/10 px-3 py-1 text-[11px] font-medium text-[#77c4ff]">
-                    Most popular
-                  </div>
-                ) : null}
+          <div className="overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113]">
+            <div className="grid grid-cols-[1fr_1fr_1fr] border-b border-[#1f1f23] max-[560px]:grid-cols-[1fr_1fr]">
+              <div className="px-5 py-4 text-[13px] font-semibold text-zinc-500">
+                Capability
               </div>
-
-              <p className="mt-5 text-sm leading-7 text-zinc-400">
-                {tier.description}
-              </p>
-              {tier.footnote ? (
-                <p className="mt-3 text-[11px] leading-5 text-zinc-500">
-                  {tier.footnote}
-                </p>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={() => handleTierCta(tier)}
-                className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-medium transition ${
-                  tier.buttonVariant === "featured"
-                    ? "border border-[#0096C7]/30 bg-[#0096C7] text-white shadow-[0_0_28px_rgba(0,150,199,0.25)] hover:bg-[#00B4D8]"
-                    : tier.buttonVariant === "ghost"
-                      ? "border border-[#333] bg-transparent text-zinc-200 hover:border-zinc-500 hover:bg-white/[0.04]"
-                      : "border border-[#333] bg-white/[0.03] text-zinc-200 hover:border-zinc-500 hover:bg-white/[0.05]"
+              <div className="px-5 py-4 text-[13px] font-semibold text-zinc-500 max-[560px]:hidden">
+                Cursor / Claude Code / Codex
+              </div>
+              <div className="border-x border-[#1f1f23] bg-[#0096C7]/[0.06] px-5 py-4 text-[13px] font-semibold text-[#77c4ff]">
+                Rada
+              </div>
+            </div>
+            {comparisonRows.map((row, idx) => (
+              <div
+                key={row.feature}
+                className={`grid grid-cols-[1fr_1fr_1fr] max-[560px]:grid-cols-[1fr_1fr] ${
+                  idx < comparisonRows.length - 1
+                    ? "border-b border-[#1f1f23]"
+                    : ""
                 }`}
               >
-                {tier.paidTier && !user ? "Sign in to upgrade" : tier.cta}
-              </button>
-            </article>
-          ))}
-          </div>
-        </section>
-
-        <section
-          id="enterprise"
-          className="rounded-[32px] border border-[#333] bg-gradient-to-br from-white/[0.03] to-transparent px-6 py-10 sm:px-10"
-        >
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-2xl">
-              <div className="text-sm font-medium uppercase tracking-[0.28em] text-[#77c4ff]">
-                Enterprise
+                <div className="px-5 py-3.5 text-sm font-medium text-zinc-200">
+                  {row.feature}
+                </div>
+                <div className="flex items-center gap-2 px-5 py-3.5 text-sm text-zinc-500 max-[560px]:hidden">
+                  <CrossIcon />
+                  <span>{row.competitors}</span>
+                </div>
+                <div className="flex items-center gap-2 border-x border-[#1f1f23] bg-[#0096C7]/[0.05] px-5 py-3.5 text-sm text-zinc-100">
+                  <CheckIcon />
+                  <span>{row.rada}</span>
+                </div>
               </div>
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-                Give your entire product team one AI workspace with sane defaults.
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-zinc-400">
-                SSO, admin-managed routing, shared blueprints, and private local
-                model policies for regulated teams.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => navigateToRoute("enterprise")}
-              className="inline-flex items-center justify-center rounded-full border border-[#333] bg-white/[0.03] px-6 py-3 text-sm font-medium text-zinc-100 transition hover:border-[#0096C7]/30 hover:bg-[#0096C7]/10 hover:text-white"
-            >
-              Talk to Sales
-            </button>
+            ))}
           </div>
         </section>
+
+        <section className="relative mb-24 overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-14 text-center">
+          <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#0096C7] to-transparent" />
+          <div className="pointer-events-none absolute -bottom-[60px] left-1/2 h-[200px] w-[400px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(0,150,199,0.16)_0%,transparent_70%)]" />
+          <h2 className="relative bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(26px,4vw,36px)] font-bold leading-tight tracking-[-0.8px] text-transparent">
+            The AI coding layer
+            <br />
+            your team actually shares.
+          </h2>
+          <p className="relative mb-9 mt-3.5 text-base text-zinc-500">
+            Early access is limited. Get notified before we open the doors.
+          </p>
+          <div className="relative">
+            <WaitlistForm
+              ctaLabel="Get early access"
+              successLabel="You're in \u2014 we'll reach out soon."
+              errorLabel="Something went wrong. Try"
+              compact
+            />
+          </div>
+        </section>
+
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1f1f23] py-8 pb-10 max-[560px]:flex-col max-[560px]:items-start">
+          <a
+            href="#"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-500 no-underline transition hover:text-zinc-200"
+          >
+            <div className="flex h-6 w-6 items-center justify-center rounded-md border border-[#333] bg-white/[0.03]">
+              <RadaLogoMark className="h-4 w-4 object-contain select-none" />
+            </div>
+            Rada
+          </a>
+          <div className="flex gap-6">
+            <a
+              href="mailto:jerseyvelvet@protonmail.com"
+              className="text-[13px] text-zinc-500 no-underline transition hover:text-zinc-200"
+            >
+              jerseyvelvet@protonmail.com
+            </a>
+            <a
+              href="mailto:jerseyvelvet@protonmail.com"
+              className="text-[13px] text-zinc-500 no-underline transition hover:text-zinc-200"
+            >
+              Contact
+            </a>
+          </div>
+        </footer>
       </div>
     </main>
   );
