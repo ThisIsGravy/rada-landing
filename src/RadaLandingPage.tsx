@@ -3,7 +3,7 @@ import RadaLogoMark from "./components/RadaLogoMark";
 import RadaWordmark from "./components/RadaWordmark";
 
 // Formspree endpoint for waitlist signups. Swap in the real form id
-// via VITE_FORMSPREE_URL before launch \u2014 placeholder accepts but
+// via VITE_FORMSPREE_URL before launch — placeholder accepts but
 // drops submissions.
 const FORMSPREE_URL =
   import.meta.env.VITE_FORMSPREE_URL ?? "https://formspree.io/f/placeholder";
@@ -21,7 +21,7 @@ const featureCards: FeatureCard[] = [
     icon: "memory",
     title: "Persistent session memory",
     description:
-      "Context, decisions, and code patterns survive session restarts. Pick up exactly where you left off \u2014 every time.",
+      "Context, decisions, and code patterns survive session restarts. Pick up exactly where you left off — every time.",
   },
   {
     icon: "team",
@@ -143,7 +143,7 @@ function CrossIcon() {
 
 function WaitlistForm({
   ctaLabel,
-  submittingLabel = "Joining\u2026",
+  submittingLabel = "Joining…",
   successLabel,
   errorLabel,
   compact = false,
@@ -189,7 +189,7 @@ function WaitlistForm({
         }`}
         role="status"
       >
-        <span aria-hidden="true">\u2726</span>
+        <span aria-hidden="true">✦</span>
         <span>{successLabel}</span>
       </div>
     );
@@ -229,11 +229,11 @@ function WaitlistForm({
           className="mt-3 flex items-center gap-2 rounded-xl border border-[#f87171]/25 bg-[#f87171]/[0.08] px-4 py-3 text-sm text-[#f87171]"
           role="alert"
         >
-          <span aria-hidden="true">\u2715</span>
+          <span aria-hidden="true">✕</span>
           <span>
             {errorLabel}{" "}
             <a
-              href="mailto:jerseyvelvet@protonmail.com"
+              href="mailto:support@userada.dev"
               className="underline underline-offset-2 hover:text-[#fca5a5]"
             >
               email us
@@ -291,12 +291,12 @@ export default function RadaLandingPage() {
             <strong className="font-medium text-zinc-200">
               Rada persists memory across sessions and teams
             </strong>{" "}
-            \u2014 so your AI assistant actually knows your codebase.
+            — so your AI assistant actually knows your codebase.
           </p>
 
           <WaitlistForm
             ctaLabel="Join the waitlist"
-            successLabel="You're on the list \u2014 we'll be in touch soon."
+            successLabel="You're on the list — we'll be in touch soon."
             errorLabel="Something went wrong. Try"
           />
 
@@ -318,7 +318,7 @@ export default function RadaLandingPage() {
             </div>
             <span>
               <span className="font-semibold text-zinc-200">Developers</span> on
-              the waitlist \u2014 shipping Q3&nbsp;2026
+              the waitlist — shipping Q3&nbsp;2026
             </span>
           </div>
         </section>
@@ -332,7 +332,7 @@ export default function RadaLandingPage() {
             You close the window.{" "}
             <em className="not-italic text-[#77c4ff]">It forgets everything.</em>
             <br />
-            Every AI session starts from scratch \u2014 your architecture decisions,
+            Every AI session starts from scratch — your architecture decisions,
             your naming conventions, your team's unwritten rules. You spend more
             time re-explaining your codebase than writing code.
           </p>
@@ -435,7 +435,7 @@ export default function RadaLandingPage() {
           <div className="relative">
             <WaitlistForm
               ctaLabel="Get early access"
-              successLabel="You're in \u2014 we'll reach out soon."
+              successLabel="You're in — we'll reach out soon."
               errorLabel="Something went wrong. Try"
               compact
             />
@@ -454,13 +454,13 @@ export default function RadaLandingPage() {
           </a>
           <div className="flex gap-6">
             <a
-              href="mailto:jerseyvelvet@protonmail.com"
+              href="mailto:support@userada.dev"
               className="text-[13px] text-zinc-500 no-underline transition hover:text-zinc-200"
             >
-              jerseyvelvet@protonmail.com
+              support@userada.dev
             </a>
             <a
-              href="mailto:jerseyvelvet@protonmail.com"
+              href="mailto:support@userada.dev"
               className="text-[13px] text-zinc-500 no-underline transition hover:text-zinc-200"
             >
               Contact
