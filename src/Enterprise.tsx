@@ -13,19 +13,19 @@ const enterpriseFeatures: EnterpriseFeature[] = [
     eyebrow: "Absolute Privacy",
     title: "Protect proprietary code by default.",
     description:
-      "Run lightweight models locally, or use our Enterprise BYOK (Bring Your Own Key) pipeline to ensure OpenRouter never trains on your data.",
+      "Run lightweight models locally so proprietary code never leaves your network. Cloud routing is opt-in per session and uses OpenRouter's zero-retention endpoints. BYOK (Bring Your Own Key) is on the enterprise roadmap.",
   },
   {
-    eyebrow: "Pooled Compute Quotas",
-    title: "Give the whole team room to think bigger.",
+    eyebrow: "Predictable Team Capacity",
+    title: "No surprise bills. No surprise throttling.",
     description:
-      "Stop tracking individual API limits. Pool your 2M+ token quotas across designers, PMs, and senior engineers.",
+      "Every seat ships with a daily burst cap. Admins see who's routing where, so capacity is easy to plan and impossible to over-spend. Team-level quota pooling is on the roadmap.",
   },
   {
     eyebrow: "Centralized Billing & SSO",
     title: "Admin-friendly controls with clean rollout.",
     description:
-      "One invoice. SAML/SSO integration. Easy onboarding.",
+      "One invoice. Google and GitHub SSO today; SAML on request. Easy onboarding for engineering teams.",
   },
 ];
 
@@ -227,7 +227,7 @@ export default function Enterprise() {
                 </div>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">
-                Zero-data-retention ready
+                Local-first by default
               </div>
             </div>
           </div>

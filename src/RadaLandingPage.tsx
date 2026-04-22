@@ -31,9 +31,9 @@ const featureCards: FeatureCard[] = [
   },
   {
     icon: "review",
-    title: "Codebase-aware review",
+    title: "Decision log with conflict detection",
     description:
-      "Code review that understands your conventions, not just syntax. Rada flags drift from your team's patterns before it ships.",
+      "Capture architecture decisions, naming rules, and constraints once. Rada surfaces them to every teammate's AI and flags when a new decision contradicts a past one.",
   },
 ];
 
@@ -60,9 +60,9 @@ const comparisonRows: ComparisonRow[] = [
     rada: "Learned once, always applied",
   },
   {
-    feature: "Works with your AI tools",
-    competitors: "Siloed",
-    rada: "Layer on top",
+    feature: "Where models run",
+    competitors: "Cloud API only",
+    rada: "Local-first, cloud when needed",
   },
 ];
 
@@ -165,6 +165,30 @@ function WaitlistForm({
       return;
     }
     setState("submitting");
+
+    // Capture UTM parameters from the URL at submit time so every waitlist
+    // signup is tagged with its original attribution source (which tweet,
+    // HN comment, referral link, etc. drove the click). Formspree treats
+    // these as top-level fields and surfaces them as columns in the
+    // submissions dashboard — no extra integration needed.
+    const attribution: Record<string, string> = {};
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      for (const key of [
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_content",
+        "utm_term",
+      ]) {
+        const value = params.get(key);
+        if (value) attribution[key] = value;
+      }
+      if (document.referrer) {
+        attribution["referrer"] = document.referrer;
+      }
+    }
+
     try {
       const res = await fetch(FORMSPREE_URL, {
         method: "POST",
@@ -172,7 +196,7 @@ function WaitlistForm({
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: trimmed }),
+        body: JSON.stringify({ email: trimmed, ...attribution }),
       });
       if (!res.ok) throw new Error("non-2xx");
       setState("success");
@@ -285,11 +309,16 @@ export default function RadaLandingPage() {
             every other AI forgets.
           </h1>
 
-          <p className="mx-auto mb-12 mt-5 max-w-[480px] text-[18px] leading-[1.65] text-zinc-500">
+          <p className="mx-auto mt-6 max-w-[540px] text-[19px] leading-[1.55] text-zinc-200">
+            AI coding that picks the right model for every task — local-first,
+            cloud when you need it so you never lose your path.
+          </p>
+
+          <p className="mx-auto mb-12 mt-4 max-w-[480px] text-[16px] leading-[1.65] text-zinc-500">
             Cursor, Claude&nbsp;Code, and Codex all lose context when the session
             ends.{" "}
             <strong className="font-medium text-zinc-200">
-              Rada persists memory across sessions and teams
+              Rada persists memory across sessions
             </strong>{" "}
             — so your AI assistant actually knows your codebase.
           </p>
