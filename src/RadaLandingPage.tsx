@@ -8,6 +8,21 @@ import RadaWordmark from "./components/RadaWordmark";
 const FORMSPREE_URL =
   import.meta.env.VITE_FORMSPREE_URL ?? "https://formspree.io/f/placeholder";
 
+// Manually-bumped waitlist counter. Set VITE_WAITLIST_COUNT in Vercel env
+// (build-time) — leave unset and the social-proof row falls back to the
+// number-free "Early access list open" copy, which reads more confidently
+// than a small count. Bump the env value when the number becomes flattering
+// (rule-of-thumb: ~50+ signups). Redeploy to publish; no runtime fetch, no
+// API key required, no Formspree paid plan.
+function parseWaitlistCount(): number | null {
+  const raw = import.meta.env.VITE_WAITLIST_COUNT;
+  if (raw == null || raw === "") return null;
+  const parsed = Number.parseInt(String(raw), 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return parsed;
+}
+const WAITLIST_COUNT = parseWaitlistCount();
+
 type FormState = "idle" | "submitting" | "success" | "error";
 
 type FeatureCard = {
@@ -346,8 +361,21 @@ export default function RadaLandingPage() {
               </div>
             </div>
             <span>
-              <span className="font-semibold text-zinc-200">Developers</span> on
-              the waitlist — shipping Q3&nbsp;2026
+              {WAITLIST_COUNT != null ? (
+                <>
+                  <span className="font-semibold text-zinc-200">
+                    {WAITLIST_COUNT.toLocaleString()} developers
+                  </span>{" "}
+                  on the waitlist — shipping Q3&nbsp;2026
+                </>
+              ) : (
+                <>
+                  <span className="font-semibold text-zinc-200">
+                    Early access list open
+                  </span>{" "}
+                  — shipping Q3&nbsp;2026
+                </>
+              )}
             </span>
           </div>
         </section>
