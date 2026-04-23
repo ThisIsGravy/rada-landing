@@ -307,9 +307,14 @@ export default function RadaLandingPage() {
               showMark={false}
             />
           </a>
-          <span className="rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-500">
-            Private beta &middot; 2026
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.08] px-3 py-1 text-xs text-[#77c4ff]">
+              Patent Pending
+            </span>
+            <span className="rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-500">
+              Private beta &middot; 2026
+            </span>
+          </div>
         </nav>
 
         <section className="py-20 text-center sm:py-24">

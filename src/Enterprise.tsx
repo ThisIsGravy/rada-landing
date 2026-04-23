@@ -161,13 +161,18 @@ export default function Enterprise() {
               </button>
             </div>
 
-            <button
-              type="button"
-              onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center justify-center rounded-full border border-[#333] bg-white/[0.03] px-4 py-2 text-sm font-medium text-zinc-100 transition hover:border-blue-500/30 hover:bg-blue-500/10"
-            >
-              Speak with Sales
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="hidden rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-blue-300 sm:inline-flex">
+                Patent Pending
+              </span>
+              <button
+                type="button"
+                onClick={() => scrollToSection("contact")}
+                className="inline-flex items-center justify-center rounded-full border border-[#333] bg-white/[0.03] px-4 py-2 text-sm font-medium text-zinc-100 transition hover:border-blue-500/30 hover:bg-blue-500/10"
+              >
+                Speak with Sales
+              </button>
+            </div>
           </nav>
         </header>
 
