@@ -563,7 +563,16 @@ export default function RadaLandingPage() {
               <ul className="space-y-2 text-[13px] text-zinc-200">
                 <li className="flex items-start gap-2">
                   <CheckIcon />
-                  <span>20 Daily Cloud Burst requests</span>
+                  <div>
+                    <span>20 Daily Cloud Burst requests</span>
+                    {/* Autorouter halves the burn-rate per request, so
+                        the same daily cap covers twice as many calls.
+                        Surface it under the headline number so the
+                        $19 tier doesn't feel artificially capped. */}
+                    <span className="mt-0.5 block text-[11.5px] text-[#77c4ff]">
+                      Doubles to <strong className="font-semibold">40 effective</strong> with Autorouter
+                    </span>
+                  </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckIcon />
@@ -598,7 +607,12 @@ export default function RadaLandingPage() {
               <ul className="space-y-2 text-[13px] text-zinc-300">
                 <li className="flex items-start gap-2">
                   <CheckIcon />
-                  <span>75 Daily Cloud Burst requests</span>
+                  <div>
+                    <span>75 Daily Cloud Burst requests</span>
+                    <span className="mt-0.5 block text-[11.5px] text-[#77c4ff]">
+                      Doubles to <strong className="font-semibold">150 effective</strong> with Autorouter
+                    </span>
+                  </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckIcon />
