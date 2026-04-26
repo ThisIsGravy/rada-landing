@@ -12,8 +12,15 @@ const FORMSPREE_URL =
 // (build-time) — leave unset and the social-proof row falls back to the
 // number-free "Early access list open" copy, which reads more confidently
 // than a small count. Bump the env value when the number becomes flattering
-// (rule-of-thumb: ~50+ signups). Redeploy to publish; no runtime fetch, no
-// API key required, no Formspree paid plan.
+// (rule-of-thumb: ~50+ signups). Redeploy to publish; no runtime fetch.
+//
+// Now that the Formspree paid plan is active, a follow-up could replace
+// this build-time env var with a live fetch from
+// `GET https://formspree.io/api/0/forms/<FORM_ID>/submissions?stats=1`
+// using a Personal Access Token in a Vercel Edge Function. Skipping for
+// now because the static number is faster, leaks no count when low, and
+// the paid plan's value here is mainly the higher submission ceiling +
+// spam filtering — both server-side wins.
 function parseWaitlistCount(): number | null {
   const raw = import.meta.env.VITE_WAITLIST_COUNT;
   if (raw == null || raw === "") return null;
@@ -308,6 +315,13 @@ export default function RadaLandingPage() {
             />
           </a>
           <div className="flex items-center gap-2">
+            {/* Category label — sits in the nav so the IDE framing is
+                visible the moment a visitor lands, even before they
+                read the hero. Hidden on narrow screens to keep the
+                nav from wrapping. */}
+            <span className="hidden rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-300 sm:inline-block">
+              Desktop AI IDE
+            </span>
             <span className="rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.08] px-3 py-1 text-xs text-[#77c4ff]">
               Patent Pending
             </span>
@@ -320,7 +334,7 @@ export default function RadaLandingPage() {
         <section className="py-20 text-center sm:py-24">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.1] px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-[#77c4ff]">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#77c4ff]" />
-            Now accepting early access
+            The AI coding IDE · Now accepting early access
           </div>
 
           <h1 className="bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(38px,6vw,58px)] font-extrabold leading-[1.1] tracking-[-1.5px] text-transparent">
@@ -329,9 +343,10 @@ export default function RadaLandingPage() {
             every other AI forgets.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-[540px] text-[19px] leading-[1.55] text-zinc-200">
-            AI coding that picks the right model for every task — local-first,
-            cloud when you need it so you never lose your path.
+          <p className="mx-auto mt-6 max-w-[560px] text-[19px] leading-[1.55] text-zinc-200">
+            <strong className="font-semibold text-white">A desktop IDE</strong>{" "}
+            that picks the right model for every task — local-first, cloud
+            when you need it, so you never lose your path.
           </p>
 
           <p className="mx-auto mb-12 mt-4 max-w-[480px] text-[16px] leading-[1.65] text-zinc-500">
@@ -340,7 +355,7 @@ export default function RadaLandingPage() {
             <strong className="font-medium text-zinc-200">
               Rada persists memory across sessions
             </strong>{" "}
-            — so your AI assistant actually knows your codebase.
+            — so the AI inside your editor actually knows your codebase.
           </p>
 
           <WaitlistForm
@@ -350,7 +365,7 @@ export default function RadaLandingPage() {
           />
 
           <p className="mt-3 text-xs text-zinc-500">
-            No spam. Unsubscribe any time.
+            Native app for macOS, Windows, and Linux · No spam · Unsubscribe any time
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-3 text-[13px] text-zinc-500">
@@ -483,11 +498,185 @@ export default function RadaLandingPage() {
           </div>
         </section>
 
-        <section className="relative mb-24 overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-14 text-center">
+        {/* ── Pricing ─────────────────────────────────────────────
+            Three monthly tiers + a limited Ultra Lifetime teaser. The
+            Lifetime card is intentionally a teaser (no buy button)
+            because the Creem product / phase pricing isn't live in
+            the dashboard yet — at launch this card flips to a real
+            checkout link routed through the create-checkout Edge
+            Function. */}
+        <section className="mb-20">
+          <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+            Pricing
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 max-[820px]:grid-cols-1">
+            {/* Free */}
+            <article className="rounded-[16px] border border-[#1f1f23] bg-[#111113] p-6">
+              <div className="mb-4 flex items-baseline justify-between">
+                <h3 className="text-lg font-semibold tracking-[-0.4px] text-white">
+                  Free
+                </h3>
+                <div>
+                  <span className="text-2xl font-bold text-white">$0</span>
+                  <span className="ml-1 text-sm text-zinc-500">/mo</span>
+                </div>
+              </div>
+              <p className="mb-5 text-sm leading-relaxed text-zinc-400">
+                Full local workspace. Bring your own cloud key when you want
+                managed model routing.
+              </p>
+              <ul className="space-y-2 text-[13px] text-zinc-300">
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>Local models (Qwen, DeepSeek, Llama)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>BYOK cloud routing</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>Project memory + telemetry stays local</span>
+                </li>
+              </ul>
+            </article>
+
+            {/* Pro — highlighted as the recommended tier */}
+            <article className="relative rounded-[16px] border border-[#0096C7]/40 bg-gradient-to-b from-[#0096C7]/[0.08] to-[#111113] p-6 shadow-[0_0_36px_rgba(0,150,199,0.12)]">
+              <span className="absolute -top-2.5 right-5 rounded-full border border-[#0096C7]/40 bg-[#0096C7]/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#77c4ff]">
+                Recommended
+              </span>
+              <div className="mb-4 flex items-baseline justify-between">
+                <h3 className="text-lg font-semibold tracking-[-0.4px] text-white">
+                  Pro
+                </h3>
+                <div>
+                  <span className="text-2xl font-bold text-white">$19</span>
+                  <span className="ml-1 text-sm text-zinc-500">/mo</span>
+                </div>
+              </div>
+              <p className="mb-5 text-sm leading-relaxed text-zinc-400">
+                Everything in Free, plus managed cloud routing — Rada picks
+                the right model so you don't have to.
+              </p>
+              <ul className="space-y-2 text-[13px] text-zinc-200">
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>20 Daily Cloud Burst requests</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>Autorouter (micro / workhorse / heavyweight)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>Burst Day uplift on the first Tuesday of every month</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>$149/yr if billed annually (save $79)</span>
+                </li>
+              </ul>
+            </article>
+
+            {/* Ultra */}
+            <article className="rounded-[16px] border border-[#1f1f23] bg-[#111113] p-6">
+              <div className="mb-4 flex items-baseline justify-between">
+                <h3 className="text-lg font-semibold tracking-[-0.4px] text-white">
+                  Ultra
+                </h3>
+                <div>
+                  <span className="text-2xl font-bold text-white">$55</span>
+                  <span className="ml-1 text-sm text-zinc-500">/mo</span>
+                </div>
+              </div>
+              <p className="mb-5 text-sm leading-relaxed text-zinc-400">
+                For people whose code-generation workflow is the bottleneck
+                — bigger budget, priority queue, deepest models.
+              </p>
+              <ul className="space-y-2 text-[13px] text-zinc-300">
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>75 Daily Cloud Burst requests</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>Priority routing (front of the cloud queue)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>Heavyweight models (Claude Sonnet, GPT-5)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon />
+                  <span>One-time Lifetime offer at launch (see below)</span>
+                </li>
+              </ul>
+            </article>
+          </div>
+
+          {/* Limited Ultra Lifetime teaser. Phased ladder — earliest
+              backers get the lowest price. Cap (1,430 seats) lives in
+              the lifetime_deals table; we don't render the live count
+              here because there's nothing to count yet pre-launch. */}
+          <div className="relative mt-6 overflow-hidden rounded-[16px] border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.08] via-[#111113] to-[#111113] p-6">
+            <span className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-amber-500/15 blur-[60px]" />
+            <div className="relative flex flex-wrap items-start justify-between gap-6">
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-300">
+                  Coming at launch · Limited
+                </div>
+                <h3 className="text-xl font-semibold tracking-[-0.4px] text-white">
+                  Ultra Lifetime
+                </h3>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-300">
+                  Pay once, use Ultra forever. Capped at <strong className="text-white">1,430 seats</strong> total
+                  across four pricing phases — earliest supporters get the
+                  lowest price. After the cap, the Lifetime tier closes for
+                  good.
+                </p>
+              </div>
+              <div className="shrink-0 text-right">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                  Phased pricing
+                </div>
+                <div className="mt-1 font-mono text-sm tabular-nums text-zinc-200">
+                  $550 → $650 → $750 → $1,000
+                </div>
+                <div className="mt-1 text-[11px] text-zinc-500">
+                  ~358 seats per phase
+                </div>
+              </div>
+            </div>
+            <div className="relative mt-5 flex flex-wrap items-center gap-3 border-t border-amber-500/15 pt-4">
+              <span className="text-sm text-zinc-400">
+                Lifetime sales open the day Rada exits closed beta.
+              </span>
+              <a
+                href="#waitlist"
+                className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[12px] font-medium text-amber-200 no-underline transition hover:bg-amber-500/20"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("waitlist")
+                    ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+              >
+                Join the waitlist for early access →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="waitlist"
+          className="relative mb-24 overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-14 text-center"
+        >
           <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#0096C7] to-transparent" />
           <div className="pointer-events-none absolute -bottom-[60px] left-1/2 h-[200px] w-[400px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(0,150,199,0.16)_0%,transparent_70%)]" />
           <h2 className="relative bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(26px,4vw,36px)] font-bold leading-tight tracking-[-0.8px] text-transparent">
-            The AI coding layer
+            The AI coding IDE
             <br />
             your team actually shares.
           </h2>

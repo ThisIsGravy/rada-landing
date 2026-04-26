@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import CheckoutSuccess from "./CheckoutSuccess";
 import Enterprise from "./Enterprise";
+import Privacy from "./Privacy";
 import RadaLandingPage from "./RadaLandingPage";
+import Terms from "./Terms";
 import { getHashRoute, type SiteRoute } from "./siteNavigation";
 
 export default function SiteRouter() {
@@ -17,5 +20,8 @@ export default function SiteRouter() {
   }, [route]);
 
   if (route === "enterprise") return <Enterprise />;
+  if (route === "terms") return <Terms />;
+  if (route === "privacy") return <Privacy />;
+  if (route === "checkoutSuccess") return <CheckoutSuccess />;
   return <RadaLandingPage />;
 }

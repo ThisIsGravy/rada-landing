@@ -3,10 +3,21 @@ import { openApp } from "./lib/appUrl";
 // Landing-only routes. The desktop app handles "workspace", "signin",
 // and "auth-callback" in its own build \u2014 calling navigateToRoute with
 // those values on the landing redirects to the app URL.
-export type SiteRoute = "landing" | "enterprise" | "workspace" | "signin" | "auth-callback";
+export type SiteRoute =
+  | "landing"
+  | "enterprise"
+  | "terms"
+  | "privacy"
+  | "checkoutSuccess"
+  | "workspace"
+  | "signin"
+  | "auth-callback";
 
 export function getHashRoute(hash = window.location.hash): SiteRoute {
   if (hash.startsWith("#/enterprise")) return "enterprise";
+  if (hash.startsWith("#/terms")) return "terms";
+  if (hash.startsWith("#/privacy")) return "privacy";
+  if (hash.startsWith("#/checkout/success")) return "checkoutSuccess";
   return "landing";
 }
 
@@ -24,7 +35,16 @@ export function navigateToRoute(route: SiteRoute) {
     return;
   }
 
-  const targetHash = route === "enterprise" ? "#/enterprise" : "#/";
+  const targetHash =
+    route === "enterprise"
+      ? "#/enterprise"
+      : route === "terms"
+        ? "#/terms"
+        : route === "privacy"
+          ? "#/privacy"
+          : route === "checkoutSuccess"
+            ? "#/checkout/success"
+            : "#/";
   if (window.location.hash === targetHash) {
     window.scrollTo({ top: 0, behavior: "smooth" });
     return;
