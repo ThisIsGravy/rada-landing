@@ -498,187 +498,72 @@ export default function RadaLandingPage() {
           </div>
         </section>
 
-        {/* ── Pricing ─────────────────────────────────────────────
-            Three monthly tiers + a limited Ultra Lifetime teaser. The
-            Lifetime card is intentionally a teaser (no buy button)
-            because the Creem product / phase pricing isn't live in
-            the dashboard yet — at launch this card flips to a real
-            checkout link routed through the create-checkout Edge
-            Function. */}
+        {/* ── Beta perks ──────────────────────────────────────────
+            Replaces the previous price-tier matrix. The landing page
+            is now waitlist-funnel-only — no dollar amounts, no urgency
+            counters, no "limited X seats" framing. The single perk we
+            DO surface is the priority lane for Ultra Lifetime that
+            beta participants get when sales open, because that's both
+            (a) a real benefit, and (b) a reason to convert today
+            without putting a price tag on the conversion. */}
         <section className="mb-20">
           <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
-            Pricing
+            Beta perks
           </div>
 
-          <div className="grid grid-cols-3 gap-4 max-[820px]:grid-cols-1">
-            {/* Free */}
-            <article className="rounded-[16px] border border-[#1f1f23] bg-[#111113] p-6">
-              <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-lg font-semibold tracking-[-0.4px] text-white">
-                  Free
-                </h3>
-                <div>
-                  <span className="text-2xl font-bold text-white">$0</span>
-                  <span className="ml-1 text-sm text-zinc-500">/mo</span>
-                </div>
+          <div className="relative overflow-hidden rounded-[16px] border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.08] via-[#111113] to-[#111113] p-7">
+            <span className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-500/15 blur-[70px]" />
+
+            <div className="relative">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-300">
+                For closed-beta members
               </div>
-              <p className="mb-5 text-sm leading-relaxed text-zinc-400">
-                Full local workspace. Bring your own cloud key when you want
-                managed model routing.
+
+              <h3 className="text-xl font-semibold tracking-[-0.4px] text-white sm:text-2xl">
+                Beta testers go first for Ultra Lifetime cloud access.
+              </h3>
+
+              <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-zinc-300">
+                Beta testers help us shape Rada, so beta testers are first
+                in line when the one-time Ultra Lifetime tier opens.
+                Lifetime is one payment for cloud access at the Ultra
+                level — forever — and as a beta participant you'll be
+                invited before it goes public.
               </p>
-              <ul className="space-y-2 text-[13px] text-zinc-300">
+
+              <ul className="mt-5 grid grid-cols-1 gap-3 text-sm text-zinc-200 sm:grid-cols-3">
                 <li className="flex items-start gap-2">
                   <CheckIcon />
-                  <span>Local models (Qwen, DeepSeek, Llama)</span>
+                  <span>Early-access invite to the Lifetime tier when it goes live</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckIcon />
-                  <span>BYOK cloud routing</span>
+                  <span>Direct line to the team during the beta — your bugs, your features</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckIcon />
-                  <span>Project memory + telemetry stays local</span>
+                  <span>Founding-supporter recognition once we exit beta</span>
                 </li>
               </ul>
-            </article>
 
-            {/* Pro — highlighted as the recommended tier */}
-            <article className="relative rounded-[16px] border border-[#0096C7]/40 bg-gradient-to-b from-[#0096C7]/[0.08] to-[#111113] p-6 shadow-[0_0_36px_rgba(0,150,199,0.12)]">
-              <span className="absolute -top-2.5 right-5 rounded-full border border-[#0096C7]/40 bg-[#0096C7]/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#77c4ff]">
-                Recommended
-              </span>
-              <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-lg font-semibold tracking-[-0.4px] text-white">
-                  Pro
-                </h3>
-                <div>
-                  <span className="text-2xl font-bold text-white">$19</span>
-                  <span className="ml-1 text-sm text-zinc-500">/mo</span>
-                </div>
+              <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-amber-500/15 pt-5">
+                <span className="text-sm text-zinc-400">
+                  No price commitment to join the waitlist — we'll reach
+                  out when there's something to try.
+                </span>
+                <a
+                  href="#waitlist"
+                  className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1.5 text-[13px] font-medium text-amber-200 no-underline transition hover:bg-amber-500/20"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document
+                      .getElementById("waitlist")
+                      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                >
+                  Join the closed beta →
+                </a>
               </div>
-              <p className="mb-5 text-sm leading-relaxed text-zinc-400">
-                Everything in Free, plus managed cloud routing — Rada picks
-                the right model so you don't have to.
-              </p>
-              <ul className="space-y-2 text-[13px] text-zinc-200">
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <div>
-                    <span>20 Daily Cloud Burst requests</span>
-                    {/* Autorouter halves the burn-rate per request, so
-                        the same daily cap covers twice as many calls.
-                        Surface it under the headline number so the
-                        $19 tier doesn't feel artificially capped. */}
-                    <span className="mt-0.5 block text-[11.5px] text-[#77c4ff]">
-                      Doubles to <strong className="font-semibold">40 effective</strong> with Autorouter
-                    </span>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <span>Autorouter (micro / workhorse / heavyweight)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <span>Burst Day uplift on the first Tuesday of every month</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <span>$149/yr if billed annually (save $79)</span>
-                </li>
-              </ul>
-            </article>
-
-            {/* Ultra */}
-            <article className="rounded-[16px] border border-[#1f1f23] bg-[#111113] p-6">
-              <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-lg font-semibold tracking-[-0.4px] text-white">
-                  Ultra
-                </h3>
-                <div>
-                  <span className="text-2xl font-bold text-white">$55</span>
-                  <span className="ml-1 text-sm text-zinc-500">/mo</span>
-                </div>
-              </div>
-              <p className="mb-5 text-sm leading-relaxed text-zinc-400">
-                For people whose code-generation workflow is the bottleneck
-                — bigger budget, priority queue, deepest models.
-              </p>
-              <ul className="space-y-2 text-[13px] text-zinc-300">
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <div>
-                    <span>75 Daily Cloud Burst requests</span>
-                    <span className="mt-0.5 block text-[11.5px] text-[#77c4ff]">
-                      Doubles to <strong className="font-semibold">150 effective</strong> with Autorouter
-                    </span>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <span>Priority routing (front of the cloud queue)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <span>Heavyweight models (Claude Sonnet, GPT-5)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon />
-                  <span>One-time Lifetime offer at launch (see below)</span>
-                </li>
-              </ul>
-            </article>
-          </div>
-
-          {/* Limited Ultra Lifetime teaser. Phased ladder — earliest
-              backers get the lowest price. Cap (1,430 seats) lives in
-              the lifetime_deals table; we don't render the live count
-              here because there's nothing to count yet pre-launch. */}
-          <div className="relative mt-6 overflow-hidden rounded-[16px] border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.08] via-[#111113] to-[#111113] p-6">
-            <span className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-amber-500/15 blur-[60px]" />
-            <div className="relative flex flex-wrap items-start justify-between gap-6">
-              <div className="min-w-0 flex-1">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-300">
-                  Coming at launch · Limited
-                </div>
-                <h3 className="text-xl font-semibold tracking-[-0.4px] text-white">
-                  Ultra Lifetime
-                </h3>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-300">
-                  Pay once, use Ultra forever. Capped at <strong className="text-white">1,430 seats</strong> total
-                  across four pricing phases — earliest supporters get the
-                  lowest price. After the cap, the Lifetime tier closes for
-                  good.
-                </p>
-              </div>
-              <div className="shrink-0 text-right">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                  Phased pricing
-                </div>
-                <div className="mt-1 font-mono text-sm tabular-nums text-zinc-200">
-                  $550 → $650 → $750 → $1,000
-                </div>
-                <div className="mt-1 text-[11px] text-zinc-500">
-                  ~358 seats per phase
-                </div>
-              </div>
-            </div>
-            <div className="relative mt-5 flex flex-wrap items-center gap-3 border-t border-amber-500/15 pt-4">
-              <span className="text-sm text-zinc-400">
-                Lifetime sales open the day Rada exits closed beta.
-              </span>
-              <a
-                href="#waitlist"
-                className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[12px] font-medium text-amber-200 no-underline transition hover:bg-amber-500/20"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document
-                    .getElementById("waitlist")
-                    ?.scrollIntoView({ behavior: "smooth", block: "center" });
-                }}
-              >
-                Join the waitlist for early access →
-              </a>
             </div>
           </div>
         </section>
