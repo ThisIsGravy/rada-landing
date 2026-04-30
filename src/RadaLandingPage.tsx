@@ -41,21 +41,21 @@ type FeatureCard = {
 const featureCards: FeatureCard[] = [
   {
     icon: "memory",
-    title: "Persistent session memory",
+    title: "Behavioral Routing",
     description:
-      "Context, decisions, and code patterns survive session restarts. Pick up exactly where you left off — every time.",
+      "One local model, three behaviors. Rada adjusts the system prompt, temperature, and context window based on whether you're refactoring, building, or learning.",
   },
   {
     icon: "team",
-    title: "Team context sharing",
+    title: "Smart cloud routing",
     description:
-      "Shared memory across your engineering team. Everyone's AI assistant knows the same architecture, the same rules, the same codebase.",
+      "When a task exceeds local capability, the Autorouter picks the right cloud endpoint automatically. Routed requests burn at half the normal quota rate.",
   },
   {
     icon: "review",
-    title: "Decision log with conflict detection",
+    title: "Persistent memory",
     description:
-      "Capture architecture decisions, naming rules, and constraints once. Rada surfaces them to every teammate's AI and flags when a new decision contradicts a past one.",
+      "Context, decisions, and code patterns survive session restarts. Your AI assistant actually knows your codebase without being reminded every time.",
   },
 ];
 
@@ -67,24 +67,24 @@ type ComparisonRow = {
 
 const comparisonRows: ComparisonRow[] = [
   {
-    feature: "Cross-session memory",
-    competitors: "Resets on close",
-    rada: "Always on",
-  },
-  {
-    feature: "Team-shared context",
-    competitors: "Per-developer only",
-    rada: "Synced across team",
-  },
-  {
-    feature: "Codebase conventions",
-    competitors: "Must re-explain each time",
-    rada: "Learned once, always applied",
-  },
-  {
     feature: "Where models run",
-    competitors: "Cloud API only",
+    competitors: "Cloud only",
     rada: "Local-first, cloud when needed",
+  },
+  {
+    feature: "Model switching",
+    competitors: "Hot-swap (RAM spikes)",
+    rada: "One model, behavioral routing",
+  },
+  {
+    feature: "Cloud cost control",
+    competitors: "$20-60/mo, usage-gated",
+    rada: "Daily burst quota, 0.5x autoroute rate",
+  },
+  {
+    feature: "Session memory",
+    competitors: "Resets on close",
+    rada: "Persists across sessions",
   },
 ];
 
@@ -334,28 +334,27 @@ export default function RadaLandingPage() {
         <section className="py-20 text-center sm:py-24">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.1] px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-[#77c4ff]">
             <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#77c4ff]" />
-            The AI coding IDE · Now accepting early access
+            Local-first AI coding · Now accepting early access
           </div>
 
           <h1 className="bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(38px,6vw,58px)] font-extrabold leading-[1.1] tracking-[-1.5px] text-transparent">
-            Rada remembers what
+            Your AI. Your machine.
             <br />
-            every other AI forgets.
+            Cloud when you need it.
           </h1>
 
           <p className="mx-auto mt-6 max-w-[560px] text-[19px] leading-[1.55] text-zinc-200">
-            <strong className="font-semibold text-white">A desktop IDE</strong>{" "}
-            that picks the right model for every task — local-first, cloud
-            when you need it, so you never lose your path.
+            <strong className="font-semibold text-white">A desktop AI coding workspace</strong>{" "}
+            that runs local models by default and routes to cloud only when the
+            task demands it. One model in RAM, zero model swapping.
           </p>
 
           <p className="mx-auto mb-12 mt-4 max-w-[480px] text-[16px] leading-[1.65] text-zinc-500">
-            Cursor, Claude&nbsp;Code, and Codex all lose context when the session
-            ends.{" "}
+            Copilot paused signups. Cursor is $60/mo. Claude Code might leave
+            Pro.{" "}
             <strong className="font-medium text-zinc-200">
-              Rada persists memory across sessions
-            </strong>{" "}
-            — so the AI inside your editor actually knows your codebase.
+              Rada gives you local-first AI coding without the cloud lock-in.
+            </strong>
           </p>
 
           <WaitlistForm
@@ -406,30 +405,32 @@ export default function RadaLandingPage() {
             The problem
           </div>
           <p className="max-w-[580px] text-[17px] leading-[1.7] text-zinc-200">
-            You close the window.{" "}
-            <em className="not-italic text-[#77c4ff]">It forgets everything.</em>
+            Every AI coding tool is cloud-only.{" "}
+            <em className="not-italic text-[#77c4ff]">The cost model is breaking.</em>
             <br />
-            Every AI session starts from scratch — your architecture decisions,
-            your naming conventions, your team's unwritten rules. You spend more
-            time re-explaining your codebase than writing code.
+            You're paying cloud prices for refactors, explanations, and quick
+            fixes that could run on your own hardware. And when providers
+            can't sustain it, they raise prices or cut access.
           </p>
           <pre className="mt-5 overflow-x-auto rounded-[10px] border border-[#1f1f23] bg-white/[0.03] px-4 py-3.5 font-mono text-xs leading-[1.8] text-zinc-500">
-            <span className="text-[#546e7a]"># What you tell your AI assistant every. single. day.</span>
+            <span className="text-[#546e7a]"># What cloud-only AI coding looks like</span>
             {"\n"}
-            <span className="text-[#546e7a]"># "As a reminder, we use PostgreSQL not MySQL..."</span>
+            <span className="text-[#546e7a]"># refactor_function()    → cloud API  → $0.03</span>
             {"\n"}
-            <span className="text-[#546e7a]"># "As a reminder, auth is handled by the middleware layer..."</span>
+            <span className="text-[#546e7a]"># explain_this_code()    → cloud API  → $0.02</span>
             {"\n"}
-            <span className="text-[#546e7a]"># "As a reminder, don't touch the legacy billing module..."</span>
+            <span className="text-[#546e7a]"># fix_typo()             → cloud API  → $0.01</span>
             {"\n\n"}
+            <span className="text-[#546e7a]"># What Rada does instead</span>
+            {"\n"}
             <span className="text-[#82aaff]">rada</span>
             <span>.</span>
-            <span className="text-[#c792ea]">remember</span>
+            <span className="text-[#c792ea]">route</span>
             <span>(</span>
-            <span className="text-[#c3e88d]">"everything"</span>
+            <span className="text-[#c3e88d]">"local"</span>
             <span>)</span>
             {"  "}
-            <span className="text-[#546e7a]"># once</span>
+            <span className="text-[#546e7a]"># your machine, your model, $0</span>
           </pre>
         </section>
 
@@ -575,12 +576,12 @@ export default function RadaLandingPage() {
           <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#0096C7] to-transparent" />
           <div className="pointer-events-none absolute -bottom-[60px] left-1/2 h-[200px] w-[400px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(0,150,199,0.16)_0%,transparent_70%)]" />
           <h2 className="relative bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(26px,4vw,36px)] font-bold leading-tight tracking-[-0.8px] text-transparent">
-            The AI coding IDE
+            Local-first AI coding.
             <br />
-            your team actually shares.
+            No cloud lock-in.
           </h2>
           <p className="relative mb-9 mt-3.5 text-base text-zinc-500">
-            Early access is limited. Get notified before we open the doors.
+            Closed beta coming soon. Get early access.
           </p>
           <div className="relative">
             <WaitlistForm
