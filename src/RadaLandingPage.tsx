@@ -36,6 +36,7 @@ type FeatureCard = {
   icon: "memory" | "team" | "review";
   title: string;
   description: string;
+  accent: "blue" | "gold";
 };
 
 const featureCards: FeatureCard[] = [
@@ -44,18 +45,21 @@ const featureCards: FeatureCard[] = [
     title: "Behavioral Routing",
     description:
       "One local model, three behaviors. Rada adjusts the system prompt, temperature, and context window based on whether you're refactoring, building, or learning.",
+    accent: "blue",
   },
   {
     icon: "team",
     title: "Smart cloud routing",
     description:
       "When a task exceeds local capability, the Autorouter picks the right cloud endpoint automatically. Routed requests burn at half the normal quota rate.",
+    accent: "gold",
   },
   {
     icon: "review",
     title: "Persistent memory",
     description:
       "Context, decisions, and code patterns survive session restarts. Your AI assistant actually knows your codebase without being reminded every time.",
+    accent: "blue",
   },
 ];
 
@@ -88,9 +92,9 @@ const comparisonRows: ComparisonRow[] = [
   },
 ];
 
-function FeatureIcon({ icon }: { icon: FeatureCard["icon"] }) {
+function FeatureIcon({ icon, accent }: { icon: FeatureCard["icon"]; accent: FeatureCard["accent"] }) {
   const common = {
-    className: "h-[18px] w-[18px] text-[#77c4ff]",
+    className: `h-[18px] w-[18px] ${accent === "gold" ? "text-[#EF9F27]" : "text-[#7bc8ff]"}`,
     fill: "none" as const,
     stroke: "currentColor",
     strokeWidth: 1.7,
@@ -230,7 +234,7 @@ function WaitlistForm({
   if (state === "success") {
     return (
       <div
-        className={`mx-auto flex items-center gap-3 rounded-2xl border border-[#0096C7]/25 bg-[#0096C7]/[0.08] px-4 py-3 text-sm text-[#77c4ff] ${
+        className={`mx-auto flex items-center gap-3 rounded-2xl border border-[#5b8def]/25 bg-[#5b8def]/[0.08] px-4 py-3 text-sm text-[#7bc8ff] ${
           compact ? "max-w-[400px]" : "max-w-[440px]"
         }`}
         role="status"
@@ -247,7 +251,7 @@ function WaitlistForm({
       noValidate
       className={`mx-auto w-full ${compact ? "max-w-[400px]" : "max-w-[440px]"}`}
     >
-      <div className="flex flex-col gap-2 rounded-2xl border border-[#2e2e35] bg-[#111111] p-1.5 pl-4 transition focus-within:border-[#0096C7] focus-within:shadow-[0_0_0_3px_rgba(0,150,199,0.2)] sm:flex-row sm:items-center sm:gap-2.5">
+      <div className="flex flex-col gap-2 rounded-2xl border border-[#2e2e35] bg-[#111111] p-1.5 pl-4 transition focus-within:border-[#5b8def] focus-within:shadow-[0_0_0_3px_rgba(91,141,239,0.2)] sm:flex-row sm:items-center sm:gap-2.5">
         <input
           type="email"
           name="email"
@@ -265,7 +269,7 @@ function WaitlistForm({
         <button
           type="submit"
           disabled={state === "submitting"}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-[#0096C7] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(0,150,199,0.35)] transition hover:-translate-y-px hover:bg-[#00B4D8] hover:shadow-[0_6px_24px_rgba(0,150,199,0.45)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-gradient-to-r from-[#5b8def] to-[#7bc8ff] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(91,141,239,0.35)] transition hover:-translate-y-px hover:from-[#7bc8ff] hover:to-[#8dd4ff] hover:shadow-[0_6px_24px_rgba(91,141,239,0.45)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {state === "submitting" ? submittingLabel : ctaLabel}
         </button>
@@ -296,8 +300,8 @@ export default function RadaLandingPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#0e0e0e] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute left-1/2 top-[-20%] h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(0,150,199,0.14)_0%,transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,150,199,0.06),transparent_30%)]" />
+        <div className="absolute left-1/2 top-[-20%] h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(91,141,239,0.14)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(91,141,239,0.06),transparent_30%)]" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[760px] px-6">
@@ -306,7 +310,7 @@ export default function RadaLandingPage() {
             href="#"
             className="flex items-center gap-3 text-[18px] font-bold tracking-[-0.4px] text-white no-underline"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_24px_rgba(0,150,199,0.2)]">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_24px_rgba(91,141,239,0.2)]">
               <RadaLogoMark className="h-7 w-7 object-contain select-none" />
             </div>
             <RadaWordmark
@@ -322,7 +326,7 @@ export default function RadaLandingPage() {
             <span className="hidden rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-300 sm:inline-block">
               Desktop AI IDE
             </span>
-            <span className="rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.08] px-3 py-1 text-xs text-[#77c4ff]">
+            <span className="rounded-full border border-[#5b8def]/25 bg-[#5b8def]/[0.08] px-3 py-1 text-xs text-[#7bc8ff]">
               Patent Pending
             </span>
             <span className="rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-500">
@@ -332,15 +336,19 @@ export default function RadaLandingPage() {
         </nav>
 
         <section className="py-20 text-center sm:py-24">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#0096C7]/25 bg-[#0096C7]/[0.1] px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-[#77c4ff]">
-            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#77c4ff]" />
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#5b8def]/25 bg-[#5b8def]/[0.1] px-3.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.22em] text-[#7bc8ff]">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#7bc8ff]" />
             Local-first AI coding · Now accepting early access
           </div>
 
-          <h1 className="bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(38px,6vw,58px)] font-extrabold leading-[1.1] tracking-[-1.5px] text-transparent">
-            Your AI. Your machine.
+          <h1 className="text-[clamp(38px,6vw,58px)] font-extrabold leading-[1.1] tracking-[-1.5px]">
+            <span className="bg-gradient-to-br from-white from-40% to-[#7bc8ff] bg-clip-text text-transparent">
+              Your AI. Your machine.
+            </span>
             <br />
-            Cloud when you need it.
+            <span className="bg-gradient-to-br from-white from-40% to-[#EF9F27] bg-clip-text text-transparent">
+              Cloud when you need it.
+            </span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-[560px] text-[19px] leading-[1.55] text-zinc-200">
@@ -369,7 +377,7 @@ export default function RadaLandingPage() {
 
           <div className="mt-10 flex items-center justify-center gap-3 text-[13px] text-zinc-500">
             <div className="flex">
-              <div className="-mr-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#0096C7] to-[#005f80] text-[11px] font-bold text-white">
+              <div className="-mr-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#5b8def] to-[#3d6bc7] text-[11px] font-bold text-white">
                 EK
               </div>
               <div className="-mr-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#34d399] to-[#059669] text-[11px] font-bold text-white">
@@ -400,13 +408,13 @@ export default function RadaLandingPage() {
         </section>
 
         <section className="relative my-[72px] overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-9">
-          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#0096C7] to-transparent" />
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#EF9F27] to-transparent" />
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
             The problem
           </div>
           <p className="max-w-[580px] text-[17px] leading-[1.7] text-zinc-200">
             Every AI coding tool is cloud-only.{" "}
-            <em className="not-italic text-[#77c4ff]">The cost model is breaking.</em>
+            <em className="not-italic text-[#EF9F27]">The cost model is breaking.</em>
             <br />
             You're paying cloud prices for refactors, explanations, and quick
             fixes that could run on your own hardware. And when providers
@@ -444,8 +452,8 @@ export default function RadaLandingPage() {
                 key={feature.title}
                 className="group rounded-[16px] border border-[#1f1f23] bg-[#111113] p-6 transition hover:-translate-y-0.5 hover:border-[#2e2e35]"
               >
-                <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#0096C7]/15">
-                  <FeatureIcon icon={feature.icon} />
+                <div className={`mb-4 flex h-9 w-9 items-center justify-center rounded-[9px] ${feature.accent === "gold" ? "bg-[#BA7517]/15" : "bg-[#5b8def]/15"}`}>
+                  <FeatureIcon icon={feature.icon} accent={feature.accent} />
                 </div>
                 <h2 className="mb-2 text-[15px] font-semibold tracking-[-0.2px] text-white">
                   {feature.title}
@@ -470,7 +478,7 @@ export default function RadaLandingPage() {
               <div className="px-5 py-4 text-[13px] font-semibold text-zinc-500 max-[560px]:hidden">
                 Cursor / Claude Code / Codex
               </div>
-              <div className="border-x border-[#1f1f23] bg-[#0096C7]/[0.06] px-5 py-4 text-[13px] font-semibold text-[#77c4ff]">
+              <div className="border-x border-[#1f1f23] bg-[#5b8def]/[0.06] px-5 py-4 text-[13px] font-semibold text-[#7bc8ff]">
                 Rada
               </div>
             </div>
@@ -490,7 +498,7 @@ export default function RadaLandingPage() {
                   <CrossIcon />
                   <span>{row.competitors}</span>
                 </div>
-                <div className="flex items-center gap-2 border-x border-[#1f1f23] bg-[#0096C7]/[0.05] px-5 py-3.5 text-sm text-zinc-100">
+                <div className="flex items-center gap-2 border-x border-[#1f1f23] bg-[#5b8def]/[0.05] px-5 py-3.5 text-sm text-zinc-100">
                   <CheckIcon />
                   <span>{row.rada}</span>
                 </div>
@@ -573,9 +581,9 @@ export default function RadaLandingPage() {
           id="waitlist"
           className="relative mb-24 overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-14 text-center"
         >
-          <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#0096C7] to-transparent" />
-          <div className="pointer-events-none absolute -bottom-[60px] left-1/2 h-[200px] w-[400px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(0,150,199,0.16)_0%,transparent_70%)]" />
-          <h2 className="relative bg-gradient-to-br from-white from-40% to-[#77c4ff] bg-clip-text text-[clamp(26px,4vw,36px)] font-bold leading-tight tracking-[-0.8px] text-transparent">
+          <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#EF9F27] to-transparent" />
+          <div className="pointer-events-none absolute -bottom-[60px] left-1/2 h-[200px] w-[400px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(239,159,39,0.16)_0%,transparent_70%)]" />
+          <h2 className="relative bg-gradient-to-br from-white from-40% to-[#EF9F27] bg-clip-text text-[clamp(26px,4vw,36px)] font-bold leading-tight tracking-[-0.8px] text-transparent">
             Local-first AI coding.
             <br />
             No cloud lock-in.
