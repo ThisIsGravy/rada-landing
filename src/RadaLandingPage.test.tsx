@@ -7,7 +7,7 @@ describe("RadaLandingPage", () => {
     render(<RadaLandingPage />);
 
     expect(
-      screen.getByText(/Rada remembers what/i),
+      screen.getByText(/Your AI\. Your machine\./i),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /join the waitlist/i }),

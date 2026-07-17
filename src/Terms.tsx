@@ -268,7 +268,7 @@ export default function Terms() {
                 <RadaLogoMark className="h-9 w-9 object-contain select-none" />
               </div>
               <RadaWordmark
-                className="h-14 w-[188px] object-contain select-none sm:w-[208px]"
+                className="h-14 w-[188px] object-contain select-none max-sm:hidden sm:w-[208px]"
                 showMark={false}
               />
             </button>

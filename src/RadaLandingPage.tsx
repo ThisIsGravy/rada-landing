@@ -256,6 +256,7 @@ function WaitlistForm({
           type="email"
           name="email"
           required
+          aria-label="Work email"
           autoComplete="email"
           placeholder="you@yourcompany.com"
           value={email}
@@ -307,7 +308,8 @@ export default function RadaLandingPage() {
       <div className="relative z-10 mx-auto w-full max-w-[760px] px-6">
         <nav className="flex items-center justify-between pt-7">
           <a
-            href="#"
+            href="#/"
+            aria-label="Rada home"
             className="flex items-center gap-3 text-[18px] font-bold tracking-[-0.4px] text-white no-underline"
           >
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_24px_rgba(91,141,239,0.2)]">
@@ -329,7 +331,7 @@ export default function RadaLandingPage() {
             <span className="rounded-full border border-[#5b8def]/25 bg-[#5b8def]/[0.08] px-3 py-1 text-xs text-[#7bc8ff]">
               Patent Pending
             </span>
-            <span className="rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-500">
+            <span className="hidden rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-400 sm:inline-block">
               Private beta &middot; 2026
             </span>
           </div>
@@ -357,7 +359,7 @@ export default function RadaLandingPage() {
             task demands it. One model in RAM, zero model swapping.
           </p>
 
-          <p className="mx-auto mb-12 mt-4 max-w-[480px] text-[16px] leading-[1.65] text-zinc-500">
+          <p className="mx-auto mb-12 mt-4 max-w-[480px] text-[16px] leading-[1.65] text-zinc-400">
             Copilot paused signups. Cursor is $60/mo. Claude Code might leave
             Pro.{" "}
             <strong className="font-medium text-zinc-200">
@@ -371,11 +373,11 @@ export default function RadaLandingPage() {
             errorLabel="Something went wrong. Try"
           />
 
-          <p className="mt-3 text-xs text-zinc-500">
+          <p className="mt-3 text-xs text-zinc-400">
             Native app for macOS, Windows, and Linux · No spam · Unsubscribe any time
           </p>
 
-          <div className="mt-10 flex items-center justify-center gap-3 text-[13px] text-zinc-500">
+          <div className="mt-10 flex items-center justify-center gap-3 text-[13px] text-zinc-400">
             <div className="flex">
               <div className="-mr-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0e0e0e] bg-gradient-to-br from-[#5b8def] to-[#3d6bc7] text-[11px] font-bold text-white">
                 EK
@@ -409,9 +411,9 @@ export default function RadaLandingPage() {
 
         <section className="relative my-[72px] overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113] px-10 py-9">
           <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#EF9F27] to-transparent" />
-          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+          <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-400">
             The problem
-          </div>
+          </h2>
           <p className="max-w-[580px] text-[17px] leading-[1.7] text-zinc-200">
             Every AI coding tool is cloud-only.{" "}
             <em className="not-italic text-[#EF9F27]">The cost model is breaking.</em>
@@ -421,15 +423,15 @@ export default function RadaLandingPage() {
             can't sustain it, they raise prices or cut access.
           </p>
           <pre className="mt-5 overflow-x-auto rounded-[10px] border border-[#1f1f23] bg-white/[0.03] px-4 py-3.5 font-mono text-xs leading-[1.8] text-zinc-500">
-            <span className="text-[#546e7a]"># What cloud-only AI coding looks like</span>
+            <span className="text-[#8792a2]"># What cloud-only AI coding looks like</span>
             {"\n"}
-            <span className="text-[#546e7a]"># refactor_function()    → cloud API  → $0.03</span>
+            <span className="text-[#8792a2]"># refactor_function()    → cloud API  → $0.03</span>
             {"\n"}
-            <span className="text-[#546e7a]"># explain_this_code()    → cloud API  → $0.02</span>
+            <span className="text-[#8792a2]"># explain_this_code()    → cloud API  → $0.02</span>
             {"\n"}
-            <span className="text-[#546e7a]"># fix_typo()             → cloud API  → $0.01</span>
+            <span className="text-[#8792a2]"># fix_typo()             → cloud API  → $0.01</span>
             {"\n\n"}
-            <span className="text-[#546e7a]"># What Rada does instead</span>
+            <span className="text-[#8792a2]"># What Rada does instead</span>
             {"\n"}
             <span className="text-[#82aaff]">rada</span>
             <span>.</span>
@@ -438,14 +440,14 @@ export default function RadaLandingPage() {
             <span className="text-[#c3e88d]">"local"</span>
             <span>)</span>
             {"  "}
-            <span className="text-[#546e7a]"># your machine, your model, $0</span>
+            <span className="text-[#8792a2]"># your machine, your model, $0</span>
           </pre>
         </section>
 
         <section className="mb-20">
-          <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+          <h2 className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-400">
             What Rada does
-          </div>
+          </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {featureCards.map((feature) => (
               <article
@@ -455,10 +457,10 @@ export default function RadaLandingPage() {
                 <div className={`mb-4 flex h-9 w-9 items-center justify-center rounded-[9px] ${feature.accent === "gold" ? "bg-[#BA7517]/15" : "bg-[#5b8def]/15"}`}>
                   <FeatureIcon icon={feature.icon} accent={feature.accent} />
                 </div>
-                <h2 className="mb-2 text-[15px] font-semibold tracking-[-0.2px] text-white">
+                <h3 className="mb-2 text-[15px] font-semibold tracking-[-0.2px] text-white">
                   {feature.title}
-                </h2>
-                <p className="text-sm leading-[1.6] text-zinc-500">
+                </h3>
+                <p className="text-sm leading-[1.6] text-zinc-400">
                   {feature.description}
                 </p>
               </article>
@@ -467,15 +469,15 @@ export default function RadaLandingPage() {
         </section>
 
         <section className="mb-20">
-          <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+          <h2 className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-400">
             How Rada compares
-          </div>
+          </h2>
           <div className="overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#111113]">
             <div className="grid grid-cols-[1fr_1fr_1fr] border-b border-[#1f1f23] max-[560px]:grid-cols-[1fr_1fr]">
-              <div className="px-5 py-4 text-[13px] font-semibold text-zinc-500">
+              <div className="px-5 py-4 text-[13px] font-semibold text-zinc-400">
                 Capability
               </div>
-              <div className="px-5 py-4 text-[13px] font-semibold text-zinc-500 max-[560px]:hidden">
+              <div className="px-5 py-4 text-[13px] font-semibold text-zinc-400 max-[560px]:hidden">
                 Cursor / Claude Code / Codex
               </div>
               <div className="border-x border-[#1f1f23] bg-[#5b8def]/[0.06] px-5 py-4 text-[13px] font-semibold text-[#7bc8ff]">
@@ -494,7 +496,7 @@ export default function RadaLandingPage() {
                 <div className="px-5 py-3.5 text-sm font-medium text-zinc-200">
                   {row.feature}
                 </div>
-                <div className="flex items-center gap-2 px-5 py-3.5 text-sm text-zinc-500 max-[560px]:hidden">
+                <div className="flex items-center gap-2 px-5 py-3.5 text-sm text-zinc-400 max-[560px]:hidden">
                   <CrossIcon />
                   <span>{row.competitors}</span>
                 </div>
@@ -516,9 +518,9 @@ export default function RadaLandingPage() {
             (a) a real benefit, and (b) a reason to convert today
             without putting a price tag on the conversion. */}
         <section className="mb-20">
-          <div className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+          <h2 className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-400">
             Beta perks
-          </div>
+          </h2>
 
           <div className="relative overflow-hidden rounded-[16px] border border-amber-500/25 bg-gradient-to-br from-amber-500/[0.08] via-[#111113] to-[#111113] p-7">
             <span className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-500/15 blur-[70px]" />
@@ -588,7 +590,7 @@ export default function RadaLandingPage() {
             <br />
             No cloud lock-in.
           </h2>
-          <p className="relative mb-9 mt-3.5 text-base text-zinc-500">
+          <p className="relative mb-9 mt-3.5 text-base text-zinc-400">
             Closed beta coming soon. Get early access.
           </p>
           <div className="relative">
@@ -603,28 +605,44 @@ export default function RadaLandingPage() {
 
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1f1f23] py-8 pb-10 max-[560px]:flex-col max-[560px]:items-start">
           <a
-            href="#"
-            className="flex items-center gap-2 text-sm font-semibold text-zinc-500 no-underline transition hover:text-zinc-200"
+            href="#/"
+            aria-label="Rada home"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-400 no-underline transition hover:text-zinc-200"
           >
             <div className="flex h-6 w-6 items-center justify-center rounded-md border border-[#333] bg-white/[0.03]">
               <RadaLogoMark className="h-4 w-4 object-contain select-none" />
             </div>
             Rada
           </a>
-          <div className="flex gap-6">
+          <nav
+            aria-label="Footer"
+            className="flex flex-wrap items-center gap-x-6 gap-y-2 max-[560px]:mt-1"
+          >
+            <a
+              href="#/enterprise"
+              className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
+            >
+              Enterprise
+            </a>
+            <a
+              href="#/privacy"
+              className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
+            >
+              Privacy
+            </a>
+            <a
+              href="#/terms"
+              className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
+            >
+              Terms
+            </a>
             <a
               href="mailto:support@userada.dev"
-              className="text-[13px] text-zinc-500 no-underline transition hover:text-zinc-200"
+              className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
             >
               support@userada.dev
             </a>
-            <a
-              href="mailto:support@userada.dev"
-              className="text-[13px] text-zinc-500 no-underline transition hover:text-zinc-200"
-            >
-              Contact
-            </a>
-          </div>
+          </nav>
         </footer>
       </div>
     </main>

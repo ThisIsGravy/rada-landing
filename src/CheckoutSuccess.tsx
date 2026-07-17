@@ -42,6 +42,18 @@ function parseCheckoutQuery(search: string): {
   return { checkoutId, userId, tier };
 }
 
+// The checkout params can arrive either as a normal query string
+// (…/checkout/success?checkout_id=…) or, on the hash-routed build, inside
+// the fragment (…/#/checkout/success?checkout_id=…) where
+// window.location.search is empty. Read whichever one actually carries them
+// so the Tier / Checkout ID render instead of falling back to "—".
+function readCheckoutParams(): string {
+  const { search, hash } = window.location;
+  if (search && search.length > 1) return search;
+  const qIndex = hash.indexOf("?");
+  return qIndex >= 0 ? hash.slice(qIndex) : "";
+}
+
 function openDeepLink() {
   // Assigning to window.location is the cross-browser-friendly way to
   // hand the URL to the OS handler. Browsers that don't recognise the
@@ -51,7 +63,7 @@ function openDeepLink() {
 
 export default function CheckoutSuccess() {
   const { checkoutId, userId, tier } = useMemo(
-    () => parseCheckoutQuery(window.location.search),
+    () => parseCheckoutQuery(readCheckoutParams()),
     [],
   );
 
@@ -98,7 +110,7 @@ export default function CheckoutSuccess() {
                 <RadaLogoMark className="h-9 w-9 object-contain select-none" />
               </div>
               <RadaWordmark
-                className="h-14 w-[188px] object-contain select-none sm:w-[208px]"
+                className="h-14 w-[188px] object-contain select-none max-sm:hidden sm:w-[208px]"
                 showMark={false}
               />
             </button>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
 import { openApp } from "./appUrl";
@@ -53,8 +53,14 @@ export function useSubscription(): UseSubscriptionReturn {
   const userId = user?.id ?? null;
   const [state, setState] = useState<SubscriptionState>(DEFAULT_SUBSCRIPTION_STATE);
   const [loading, setLoading] = useState(true);
+  // Monotonic request token. Each refresh bumps it; a response only
+  // applies if it's still the latest — so a slow query for a previous
+  // user can't resolve late and overwrite state after sign-out / a
+  // user switch (which would flash the prior account's tier).
+  const requestIdRef = useRef(0);
 
   const refresh = useCallback(async () => {
+    const reqId = ++requestIdRef.current;
     if (!userId) {
       setState(DEFAULT_SUBSCRIPTION_STATE);
       setLoading(false);
@@ -67,6 +73,7 @@ export function useSubscription(): UseSubscriptionReturn {
       )
       .eq("user_id", userId)
       .maybeSingle();
+    if (reqId !== requestIdRef.current) return;
     if (error || !data) {
       setState(DEFAULT_SUBSCRIPTION_STATE);
     } else {
