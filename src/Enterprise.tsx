@@ -11,6 +11,14 @@ const SALES_FORM_URL =
   import.meta.env.VITE_FORMSPREE_SALES_URL ??
   import.meta.env.VITE_FORMSPREE_URL ??
   "https://formspree.io/f/placeholder";
+// False when the endpoint is the drop-everything placeholder — the form then
+// fails loudly instead of silently discarding an enterprise lead.
+const SALES_FORM_CONFIGURED = !SALES_FORM_URL.includes("/f/placeholder");
+if (!SALES_FORM_CONFIGURED && typeof console !== "undefined") {
+  console.error(
+    "[rada] VITE_FORMSPREE_SALES_URL / VITE_FORMSPREE_URL is not set — the enterprise form will reject submissions. Set it in the production build env.",
+  );
+}
 
 type SalesFormState = "idle" | "submitting" | "success" | "error";
 
@@ -37,7 +45,7 @@ const enterpriseFeatures: EnterpriseFeature[] = [
     eyebrow: "Centralized Billing & SSO",
     title: "Admin-friendly controls with clean rollout.",
     description:
-      "One invoice. Google and GitHub SSO today; SAML on request. Easy onboarding for engineering teams.",
+      "One invoice. Google and GitHub sign-in today; SAML SSO on request. Easy onboarding for engineering teams.",
   },
 ];
 
@@ -70,6 +78,11 @@ function EnterpriseForm() {
     const data = new FormData(form);
     const email = String(data.get("email") ?? "").trim();
     if (!email || !email.includes("@")) {
+      setState("error");
+      return;
+    }
+    // Fail loudly against the placeholder rather than dropping the lead.
+    if (!SALES_FORM_CONFIGURED) {
       setState("error");
       return;
     }
@@ -185,10 +198,20 @@ function EnterpriseForm() {
           <button
             type="submit"
             disabled={state === "submitting"}
-            className="inline-flex w-full items-center justify-center rounded-full border border-blue-500/30 bg-blue-500 px-5 py-3 text-sm font-medium text-white shadow-[0_0_32px_rgba(59,130,246,0.24)] transition hover:bg-blue-400 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center rounded-full border border-blue-500/30 bg-blue-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-400 disabled:cursor-wait disabled:opacity-60"
           >
             {state === "submitting" ? "Sending…" : "Contact Sales"}
           </button>
+          <p className="mt-3 text-center text-[12px] leading-5 text-zinc-500">
+            By submitting, you agree to our{" "}
+            <a
+              href="#/privacy"
+              className="underline underline-offset-2 hover:text-zinc-300"
+            >
+              Privacy Policy
+            </a>
+            . We use your details only to respond to your enquiry.
+          </p>
         </form>
       )}
     </div>
@@ -197,13 +220,13 @@ function EnterpriseForm() {
 
 export default function Enterprise() {
   return (
-    <main className="min-h-screen bg-[#0e0e0e] text-zinc-100">
+    <main className="min-h-[100dvh] bg-[#0e0e0e] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[130px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.08),transparent_30%),linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_32%)]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-10">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-7xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-10">
         <header className="sticky top-0 z-20 rounded-full border border-[#333] bg-[#0e0e0e]/80 px-4 py-3 backdrop-blur-xl">
           <nav className="flex items-center justify-between gap-4">
             <button
@@ -211,7 +234,7 @@ export default function Enterprise() {
               onClick={() => navigateToRoute("landing")}
               className="flex items-center gap-3 border-0 bg-transparent p-0 text-left"
             >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_32px_rgba(59,130,246,0.18)]">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03]">
                 <RadaLogoMark className="h-9 w-9 object-contain select-none" />
               </div>
               <RadaWordmark
@@ -271,8 +294,9 @@ export default function Enterprise() {
 
             <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-zinc-400 sm:text-lg">
               Rada Enterprise gives your engineering team pooled compute limits,
-              zero-data-retention cloud routing, and localized AI models to
-              guarantee proprietary code never leaves your network.
+              zero-data-retention cloud routing, and local AI models that run on
+              your own machines by default — so code stays local unless you
+              explicitly opt a session into cloud routing.
             </p>
 
             <div
@@ -290,9 +314,9 @@ export default function Enterprise() {
                     {feature.eyebrow}
                   </div>
                   <div className="max-w-2xl">
-                    <div className="text-xl font-semibold tracking-[-0.03em] text-white">
+                    <h3 className="text-xl font-semibold tracking-[-0.03em] text-white">
                       {feature.title}
-                    </div>
+                    </h3>
                     <p className="mt-3 text-sm leading-7 text-zinc-400">
                       {feature.description}
                     </p>
@@ -310,8 +334,9 @@ export default function Enterprise() {
                   Security posture
                 </div>
                 <div className="mt-2 text-sm leading-7 text-zinc-300">
-                  Private local inference, BYOK cloud isolation, and centralized
-                  controls for every team that touches production code.
+                  Private local inference, opt-in zero-retention cloud routing,
+                  and centralized controls for every team that touches
+                  production code. (BYOK cloud isolation is on the roadmap.)
                 </div>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">

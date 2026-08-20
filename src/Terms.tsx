@@ -250,13 +250,13 @@ const sections: Section[] = [
 
 export default function Terms() {
   return (
-    <main className="relative min-h-screen bg-[#0e0e0e] text-zinc-100">
+    <main className="relative min-h-[100dvh] bg-[#0e0e0e] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[130px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.08),transparent_30%),linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_32%)]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 pb-20 pt-6 sm:px-8 lg:px-10">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-4xl flex-col px-6 pb-20 pt-6 sm:px-8 lg:px-10">
         <header className="sticky top-0 z-20 rounded-full border border-[#333] bg-[#0e0e0e]/80 px-4 py-3 backdrop-blur-xl">
           <nav className="flex items-center justify-between gap-4">
             <button
@@ -264,7 +264,7 @@ export default function Terms() {
               onClick={() => navigateToRoute("landing")}
               className="flex items-center gap-3 border-0 bg-transparent p-0 text-left"
             >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_32px_rgba(59,130,246,0.18)]">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03]">
                 <RadaLogoMark className="h-9 w-9 object-contain select-none" />
               </div>
               <RadaWordmark
@@ -303,20 +303,29 @@ export default function Terms() {
 
           <div
             role="note"
-            className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-400/[0.06] p-5 text-sm leading-7 text-yellow-100"
+            className="mt-8 rounded-2xl border border-[#333] bg-white/[0.03] p-5 text-sm leading-7 text-zinc-300"
           >
-            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-yellow-300">
-              DRAFT — pending legal review before public launch
+            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-blue-400">
+              Company details
             </div>
-            <p className="mt-2 text-yellow-100/90">
-              This document is a working draft prepared for the Rada beta. It
-              has not yet been reviewed by qualified counsel in Estonia or any
-              other jurisdiction. Founder to swap placeholder business details
-              (registered address, registry code, VAT number, contact details
-              for the data controller) and obtain legal review before this
-              page is linked from public marketing surfaces or referenced in
-              any signed contract.
+            <p className="mt-2">
+              <strong className="text-white">Rada OÜ</strong> — a private
+              limited company (osaühing) registered in the Republic of Estonia.
             </p>
+            <ul className="mt-2 space-y-1 text-zinc-400">
+              <li>Registry code (registrikood): 111111111</li>
+              <li>VAT (KMKR) number: [VAT NUMBER — to be confirmed]</li>
+              <li>Registered office: [REGISTERED OFFICE ADDRESS], Tallinn, Estonia</li>
+              <li>
+                Legal contact:{" "}
+                <a
+                  href="mailto:legal@userada.dev"
+                  className="text-blue-300 underline-offset-4 hover:underline"
+                >
+                  legal@userada.dev
+                </a>
+              </li>
+            </ul>
           </div>
 
           <div className="mt-10 space-y-10 text-sm leading-7 text-zinc-300">

@@ -7,6 +7,16 @@ import RadaWordmark from "./components/RadaWordmark";
 // drops submissions.
 const FORMSPREE_URL =
   import.meta.env.VITE_FORMSPREE_URL ?? "https://formspree.io/f/placeholder";
+// True only when a real form id is configured. If this is false the endpoint
+// is the drop-everything placeholder, so we must FAIL the submit loudly rather
+// than show a false "you're on the list" and silently lose the lead.
+const FORMSPREE_CONFIGURED = !FORMSPREE_URL.includes("/f/placeholder");
+if (!FORMSPREE_CONFIGURED && typeof console !== "undefined") {
+  // Surfaces in the browser console and in the Vercel build/log output.
+  console.error(
+    "[rada] VITE_FORMSPREE_URL is not set — the waitlist form will reject submissions instead of dropping them. Set it in the production build env.",
+  );
+}
 
 // Manually-bumped waitlist counter. Set VITE_WAITLIST_COUNT in Vercel env
 // (build-time) — leave unset and the social-proof row falls back to the
@@ -82,7 +92,7 @@ const comparisonRows: ComparisonRow[] = [
   },
   {
     feature: "Cloud cost control",
-    competitors: "$20-60/mo, usage-gated",
+    competitors: "Monthly subscription, usage-gated",
     rada: "Daily burst quota, 0.5x autoroute rate",
   },
   {
@@ -190,6 +200,12 @@ function WaitlistForm({
       setState("error");
       return;
     }
+    // Never pretend success against the drop-everything placeholder — a
+    // misconfigured deploy must be visible, not silently lose every lead.
+    if (!FORMSPREE_CONFIGURED) {
+      setState("error");
+      return;
+    }
     setState("submitting");
 
     // Capture UTM parameters from the URL at submit time so every waitlist
@@ -270,11 +286,18 @@ function WaitlistForm({
         <button
           type="submit"
           disabled={state === "submitting"}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-gradient-to-r from-[#5b8def] to-[#7bc8ff] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(91,141,239,0.35)] transition hover:-translate-y-px hover:from-[#7bc8ff] hover:to-[#8dd4ff] hover:shadow-[0_6px_24px_rgba(91,141,239,0.45)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-gradient-to-r from-[#5b8def] to-[#7bc8ff] px-5 py-2.5 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition hover:-translate-y-px hover:from-[#7bc8ff] hover:to-[#8dd4ff] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {state === "submitting" ? submittingLabel : ctaLabel}
         </button>
       </div>
+      <p className="mt-2.5 text-center text-[12px] leading-5 text-zinc-500">
+        By joining, you agree to our{" "}
+        <a href="#/privacy" className="underline underline-offset-2 hover:text-zinc-300">
+          Privacy Policy
+        </a>
+        . We use your email only to contact you about Rada.
+      </p>
       {state === "error" ? (
         <div
           className="mt-3 flex items-center gap-2 rounded-xl border border-[#f87171]/25 bg-[#f87171]/[0.08] px-4 py-3 text-sm text-[#f87171]"
@@ -299,7 +322,7 @@ function WaitlistForm({
 
 export default function RadaLandingPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0e0e0e] text-zinc-100">
+    <main className="relative min-h-[100dvh] overflow-hidden bg-[#0e0e0e] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute left-1/2 top-[-20%] h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(91,141,239,0.14)_0%,transparent_70%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(91,141,239,0.06),transparent_30%)]" />
@@ -312,7 +335,7 @@ export default function RadaLandingPage() {
             aria-label="Rada home"
             className="flex items-center gap-3 text-[18px] font-bold tracking-[-0.4px] text-white no-underline"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_24px_rgba(91,141,239,0.2)]">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03]">
               <RadaLogoMark className="h-7 w-7 object-contain select-none" />
             </div>
             <RadaWordmark
@@ -360,8 +383,7 @@ export default function RadaLandingPage() {
           </p>
 
           <p className="mx-auto mb-12 mt-4 max-w-[480px] text-[16px] leading-[1.65] text-zinc-400">
-            Copilot paused signups. Cursor is $60/mo. Claude Code might leave
-            Pro.{" "}
+            Cloud AI coding tools keep raising prices and gating usage.{" "}
             <strong className="font-medium text-zinc-200">
               Rada gives you local-first AI coding without the cloud lock-in.
             </strong>
@@ -395,14 +417,14 @@ export default function RadaLandingPage() {
                   <span className="font-semibold text-zinc-200">
                     {WAITLIST_COUNT.toLocaleString()} developers
                   </span>{" "}
-                  on the waitlist — shipping Q3&nbsp;2026
+                  on the waitlist — shipping soon
                 </>
               ) : (
                 <>
                   <span className="font-semibold text-zinc-200">
                     Early access list open
                   </span>{" "}
-                  — shipping Q3&nbsp;2026
+                  — shipping soon
                 </>
               )}
             </span>

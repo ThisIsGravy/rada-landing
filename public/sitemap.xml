@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The marketing site is a hash-routed SPA (#/enterprise, #/privacy, #/terms),
+  so those sub-pages are not distinct URLs to crawlers and cannot be listed as
+  separate sitemap entries. Only the root document is independently crawlable.
+  If SEO for the sub-pages matters later, switch to real path routing (or
+  prerender the routes) and add them here.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://userada.dev/</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

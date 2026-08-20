@@ -92,13 +92,13 @@ export default function CheckoutSuccess() {
         : "Welcome to Rada.";
 
   return (
-    <main className="relative min-h-screen bg-[#0e0e0e] text-zinc-100">
+    <main className="relative min-h-[100dvh] bg-[#0e0e0e] text-zinc-100">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[130px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.08),transparent_30%),linear-gradient(to_bottom,rgba(255,255,255,0.02),transparent_32%)]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-10">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-10">
         <header className="sticky top-0 z-20 rounded-full border border-[#333] bg-[#0e0e0e]/80 px-4 py-3 backdrop-blur-xl">
           <nav className="flex items-center justify-between gap-4">
             <button
@@ -106,7 +106,7 @@ export default function CheckoutSuccess() {
               onClick={() => navigateToRoute("landing")}
               className="flex items-center gap-3 border-0 bg-transparent p-0 text-left"
             >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03] shadow-[0_0_32px_rgba(59,130,246,0.18)]">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03]">
                 <RadaLogoMark className="h-9 w-9 object-contain select-none" />
               </div>
               <RadaWordmark
@@ -185,7 +185,7 @@ export default function CheckoutSuccess() {
                   setHasOpened(true);
                   openDeepLink();
                 }}
-                className="inline-flex items-center justify-center rounded-full border border-blue-500/30 bg-blue-500 px-5 py-3 text-sm font-medium text-white shadow-[0_0_32px_rgba(59,130,246,0.24)] transition hover:bg-blue-400"
+                className="inline-flex items-center justify-center rounded-full border border-blue-500/30 bg-blue-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-400"
               >
                 Open Rada
               </button>
