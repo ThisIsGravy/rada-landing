@@ -16,18 +16,31 @@ const COUNTDOWN_SECONDS = 5;
 type CheckoutTier = "Pro" | "Ultra" | "Lifetime" | null;
 
 // IMPORTANT: this page is a redirect landing only. We deliberately do NOT
-// verify the Creem checkout signature client-side. Signature verification,
-// idempotent activation of the subscription record, and any tier mutation
-// happen in the Creem webhook handler on the server. Client-side
-// "verification" here would be trivially spoofable and is out of scope.
-function parseCheckoutQuery(search: string): {
+// verify the Creem checkout signature client-side: verification needs the
+// Creem API key as the HMAC secret, which must never ship to a browser.
+// Signature verification, idempotent activation of the subscription
+// record, and any tier mutation happen in the Creem webhook handler on
+// the server. Client-side "verification" here would be trivially
+// spoofable and is out of scope.
+//
+// What Creem appends to success_url after payment (docs.creem.io):
+//   checkout_id, order_id (one-time), subscription_id (recurring),
+//   customer_id, product_id, request_id, signature
+// Creem preserves any query string already present on success_url, so
+// the app may add its own hint (e.g. ?tier=Pro) when it creates the
+// checkout. `tier` is optional here and falls back to "Awaiting webhook".
+type CheckoutParams = {
   checkoutId: string | null;
-  userId: string | null;
+  orderId: string | null;
+  subscriptionId: string | null;
   tier: CheckoutTier;
-} {
+};
+
+export function parseCheckoutQuery(search: string): CheckoutParams {
   const params = new URLSearchParams(search);
   const checkoutId = params.get("checkout_id");
-  const userId = params.get("user_id");
+  const orderId = params.get("order_id");
+  const subscriptionId = params.get("subscription_id");
   const rawTier = (params.get("tier") ?? "").toLowerCase();
 
   let tier: CheckoutTier = null;
@@ -39,7 +52,7 @@ function parseCheckoutQuery(search: string): {
     tier = "Lifetime";
   }
 
-  return { checkoutId, userId, tier };
+  return { checkoutId, orderId, subscriptionId, tier };
 }
 
 // The checkout params can arrive either as a normal query string
@@ -62,7 +75,7 @@ function openDeepLink() {
 }
 
 export default function CheckoutSuccess() {
-  const { checkoutId, userId, tier } = useMemo(
+  const { checkoutId, orderId, subscriptionId, tier } = useMemo(
     () => parseCheckoutQuery(readCheckoutParams()),
     [],
   );
@@ -166,9 +179,11 @@ export default function CheckoutSuccess() {
                 </span>
               </div>
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-zinc-500">User ID</span>
+                <span className="text-zinc-500">
+                  {subscriptionId ? "Subscription ID" : "Order ID"}
+                </span>
                 <span className="break-all text-right font-mono text-[12px] text-zinc-300">
-                  {userId ?? "—"}
+                  {subscriptionId ?? orderId ?? "—"}
                 </span>
               </div>
             </div>
