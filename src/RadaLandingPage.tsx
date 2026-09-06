@@ -1,6 +1,22 @@
 import { useState, type FormEvent } from "react";
 import RadaLogoMark from "./components/RadaLogoMark";
 import RadaWordmark from "./components/RadaWordmark";
+import { CURRENCY, PRICING_TIERS, formatUsd, type PricingTier } from "./lib/pricing";
+import { routePath } from "./siteNavigation";
+
+// Header + footer site links. Real hrefs (not onClick handlers) so
+// crawlers and store reviewers can find the legal pages without JS.
+// Enterprise is hidden below `sm` so Pricing / Privacy / Terms always fit
+// beside the logo on a 375px viewport (it stays in the footer everywhere).
+const siteLinks = [
+  { label: "Pricing", href: "#pricing", mobile: true },
+  { label: "Enterprise", href: routePath("enterprise"), mobile: false },
+  { label: "Privacy", href: routePath("privacy"), mobile: true },
+  { label: "Terms", href: routePath("terms"), mobile: true },
+] as const;
+
+const navLinkClass =
+  "rounded-md px-1 text-[13px] text-zinc-300 no-underline transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7bc8ff]";
 
 // Formspree endpoint for waitlist signups. Swap in the real form id
 // via VITE_FORMSPREE_URL before launch — placeholder accepts but
@@ -177,6 +193,102 @@ function CrossIcon() {
   );
 }
 
+function PricingCard({ plan }: { plan: PricingTier }) {
+  const isPaid = plan.monthlyPriceUsd > 0;
+  const border =
+    plan.highlight === "blue"
+      ? "border-[#5b8def]/40"
+      : plan.highlight === "gold"
+        ? "border-amber-500/30"
+        : "border-[#1f1f23]";
+  const accentText =
+    plan.highlight === "blue"
+      ? "text-[#7bc8ff]"
+      : plan.highlight === "gold"
+        ? "text-amber-300"
+        : "text-zinc-300";
+
+  return (
+    <article
+      className={`relative flex flex-col rounded-[16px] border ${border} bg-[#111113] p-6`}
+      aria-labelledby={`plan-${plan.tier.toLowerCase()}`}
+    >
+      {plan.highlight === "blue" ? (
+        <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5b8def] to-transparent" />
+      ) : null}
+      {plan.highlight === "gold" ? (
+        <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#EF9F27] to-transparent" />
+      ) : null}
+
+      <h3
+        id={`plan-${plan.tier.toLowerCase()}`}
+        className={`text-[13px] font-semibold uppercase tracking-[0.1em] ${accentText}`}
+      >
+        {plan.name}
+      </h3>
+
+      <p className="mt-3 flex items-baseline gap-1.5">
+        <span className="text-[34px] font-extrabold leading-none tracking-[-1px] text-white">
+          {formatUsd(plan.monthlyPriceUsd)}
+        </span>
+        <span className="text-sm text-zinc-400">
+          {isPaid ? `${CURRENCY} / month` : `${CURRENCY} · forever`}
+        </span>
+      </p>
+      {plan.annualPriceUsd != null ? (
+        <p className="mt-1.5 text-[13px] text-zinc-400">
+          or {formatUsd(plan.annualPriceUsd)} {CURRENCY} / year billed annually
+        </p>
+      ) : (
+        <p className="mt-1.5 text-[13px] text-zinc-500">
+          {isPaid ? "Billed monthly" : "No card required"}
+        </p>
+      )}
+
+      <p className="mt-4 text-sm leading-[1.55] text-zinc-300">{plan.tagline}</p>
+
+      <ul className="mt-4 flex-1 space-y-2.5 text-sm text-zinc-200">
+        {plan.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2">
+            <span className="mt-0.5 shrink-0">
+              <CheckIcon />
+            </span>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 border-t border-[#1f1f23] pt-4">
+        {isPaid ? (
+          <>
+            <p className="text-[12px] font-medium uppercase tracking-[0.1em] text-zinc-400">
+              Available in the app
+            </p>
+            <a
+              href="#waitlist"
+              className={`mt-2 inline-flex items-center gap-1 text-sm font-medium no-underline underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7bc8ff] ${accentText}`}
+            >
+              Join the waitlist for access →
+            </a>
+          </>
+        ) : (
+          <>
+            <p className="text-[12px] font-medium uppercase tracking-[0.1em] text-zinc-400">
+              Included with the app
+            </p>
+            <a
+              href="#waitlist"
+              className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-zinc-200 no-underline underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7bc8ff]"
+            >
+              Get early access →
+            </a>
+          </>
+        )}
+      </div>
+    </article>
+  );
+}
+
 function WaitlistForm({
   ctaLabel,
   submittingLabel = "Joining…",
@@ -293,7 +405,7 @@ function WaitlistForm({
       </div>
       <p className="mt-2.5 text-center text-[12px] leading-5 text-zinc-500">
         By joining, you agree to our{" "}
-        <a href="#/privacy" className="underline underline-offset-2 hover:text-zinc-300">
+        <a href={routePath("privacy")} className="underline underline-offset-2 hover:text-zinc-300">
           Privacy Policy
         </a>
         . We use your email only to contact you about Rada.
@@ -329,7 +441,7 @@ export default function RadaLandingPage() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[760px] px-6">
-        <nav className="flex items-center justify-between pt-7">
+        <nav aria-label="Primary" className="flex items-center justify-between pt-7">
           <a
             href="#/"
             aria-label="Rada home"
@@ -339,22 +451,26 @@ export default function RadaLandingPage() {
               <RadaLogoMark className="h-7 w-7 object-contain select-none" />
             </div>
             <RadaWordmark
-              className="h-9 w-[110px] object-contain select-none"
+              className="h-9 w-[110px] object-contain select-none max-sm:hidden"
               showMark={false}
             />
           </a>
-          <div className="flex items-center gap-2">
-            {/* Category label — sits in the nav so the IDE framing is
-                visible the moment a visitor lands, even before they
-                read the hero. Hidden on narrow screens to keep the
-                nav from wrapping. */}
-            <span className="hidden rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-300 sm:inline-block">
-              Desktop AI IDE
-            </span>
-            <span className="rounded-full border border-[#5b8def]/25 bg-[#5b8def]/[0.08] px-3 py-1 text-xs text-[#7bc8ff]">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              {siteLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className={`${navLinkClass} ${link.mobile ? "" : "hidden sm:inline"}`}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+            <span className="hidden rounded-full border border-[#5b8def]/25 bg-[#5b8def]/[0.08] px-3 py-1 text-xs text-[#7bc8ff] sm:inline-block">
               Patent Pending
             </span>
-            <span className="hidden rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-400 sm:inline-block">
+            <span className="hidden rounded-full border border-[#1f1f23] bg-[#111113] px-3 py-1 text-xs text-zinc-400 md:inline-block">
               Private beta &middot; 2026
             </span>
           </div>
@@ -531,14 +647,65 @@ export default function RadaLandingPage() {
           </div>
         </section>
 
+        {/* ── Pricing ─────────────────────────────────────────────
+            Public price list for the paid tiers sold through Creem
+            (required by Creem's store review: pricing must be visible
+            on the website). Figures come from src/lib/pricing.ts, which
+            mirrors fluxcode-app TIER_CONFIG — edit there, not here.
+            Checkout lives inside the desktop app, so the CTA is honest
+            about that rather than a dead Buy button. */}
+        <section id="pricing" className="mb-20 scroll-mt-8" aria-labelledby="pricing-heading">
+          <h2
+            id="pricing-heading"
+            className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-400"
+          >
+            Pricing
+          </h2>
+          <p className="mb-7 max-w-[580px] text-[15px] leading-[1.6] text-zinc-300">
+            Local is always free. Paid plans add managed cloud routing with a
+            daily burst quota. All prices in {CURRENCY}.
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {PRICING_TIERS.map((plan) => (
+              <PricingCard key={plan.tier} plan={plan} />
+            ))}
+          </div>
+
+          <div className="mt-5 space-y-1.5 text-[12px] leading-5 text-zinc-400">
+            <p>
+              Prices are in {CURRENCY} and exclusive of VAT and sales tax, which
+              is added at checkout where applicable. Payments are processed by{" "}
+              <span className="text-zinc-200">Creem.io</span>, the merchant of
+              record for all Rada purchases.
+            </p>
+            <p>
+              Monthly and annual plans renew automatically until cancelled.
+              Refunds are available within 30 days of the original charge — see
+              the{" "}
+              <a
+                href={`${routePath("terms")}#subscriptions`}
+                className="text-zinc-200 underline underline-offset-2 hover:text-white"
+              >
+                refund terms in our Terms of Service
+              </a>
+              .
+            </p>
+            <p>
+              Checkout happens inside the Rada desktop app. The app is in closed
+              beta — join the waitlist below for access.
+            </p>
+          </div>
+        </section>
+
         {/* ── Beta perks ──────────────────────────────────────────
-            Replaces the previous price-tier matrix. The landing page
-            is now waitlist-funnel-only — no dollar amounts, no urgency
-            counters, no "limited X seats" framing. The single perk we
-            DO surface is the priority lane for Ultra Lifetime that
-            beta participants get when sales open, because that's both
-            (a) a real benefit, and (b) a reason to convert today
-            without putting a price tag on the conversion. */}
+            Waitlist conversion section. Sits below the public price
+            list: joining the waitlist itself costs nothing, and beta
+            testers get first access to the one-time Ultra Lifetime
+            tier when it opens for sale. Lifetime pricing is not shown
+            here because it is not a purchasable product yet — see
+            src/lib/pricing.ts. No urgency counters or "limited X
+            seats" framing. */}
         <section className="mb-20">
           <h2 className="mb-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-400">
             Beta perks
@@ -558,10 +725,11 @@ export default function RadaLandingPage() {
 
               <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-zinc-300">
                 Beta testers help us shape Rada, so beta testers are first
-                in line when the one-time Ultra Lifetime tier opens.
-                Lifetime is one payment for cloud access at the Ultra
+                in line when the one-time Ultra Lifetime tier opens for
+                sale. Lifetime is one payment for cloud access at the Ultra
                 level — forever — and as a beta participant you'll be
-                invited before it goes public.
+                invited before it goes public. Lifetime pricing will be
+                published here when it becomes available to buy.
               </p>
 
               <ul className="mt-5 grid grid-cols-1 gap-3 text-sm text-zinc-200 sm:grid-cols-3">
@@ -581,8 +749,8 @@ export default function RadaLandingPage() {
 
               <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-amber-500/15 pt-5">
                 <span className="text-sm text-zinc-400">
-                  No price commitment to join the waitlist — we'll reach
-                  out when there's something to try.
+                  No price commitment to join the waitlist — the beta is
+                  free to try, and paid plans are only ever opt-in.
                 </span>
                 <a
                   href="#waitlist"
@@ -641,22 +809,28 @@ export default function RadaLandingPage() {
             className="flex flex-wrap items-center gap-x-6 gap-y-2 max-[560px]:mt-1"
           >
             <a
-              href="#/enterprise"
+              href="#pricing"
+              className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
+            >
+              Pricing
+            </a>
+            <a
+              href={routePath("enterprise")}
               className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
             >
               Enterprise
             </a>
             <a
-              href="#/privacy"
+              href={routePath("privacy")}
               className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
             >
-              Privacy
+              Privacy Policy
             </a>
             <a
-              href="#/terms"
+              href={routePath("terms")}
               className="text-[13px] text-zinc-400 no-underline transition hover:text-zinc-200"
             >
-              Terms
+              Terms of Service
             </a>
             <a
               href="mailto:support@userada.dev"

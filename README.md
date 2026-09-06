@@ -15,10 +15,42 @@ npm run dev                  # http://localhost:5173
 ## Build
 
 ```bash
-npm run build                # emits ./dist
+npm run build                # client build + SSR build + prerender → ./dist
+npm run build:client         # client bundle only (no prerendered sub-pages)
 npm run preview              # serve the built output locally
-npm test                     # smoke tests
+npm test                     # routing, pricing parity, and page smoke tests
 ```
+
+## Routing & prerendering
+
+Pages live at real paths — `/`, `/privacy`, `/terms`, `/enterprise`,
+`/checkout/success` — handled by `src/siteNavigation.ts` +
+`src/SiteRouter.tsx` with `history.pushState`. The old hash form
+(`/#/privacy`) is still accepted and rewritten client-side to the path
+form; fragments never reach the server, so this cannot be a Vercel redirect.
+
+`npm run build` runs three steps: the normal client build, a `vite build
+--ssr` of `src/prerender/entry.tsx`, and `scripts/prerender.mjs`, which
+renders every route in `PRERENDERED_ROUTES` with `react-dom/server` and
+writes `dist/<path>/index.html` (with per-route `<title>`, description and
+canonical). The result: the full Privacy Policy / Terms of Service text is
+present in the server-delivered HTML with JavaScript disabled, which is what
+payment-provider and search crawlers need. `src/main.tsx` hydrates those
+pages and falls back to a client render for anything else.
+
+`vercel.json` maps `/privacy`, `/terms`, `/enterprise` to their prerendered
+files, sends every other path to the SPA shell, redirects `/pricing` to
+`/#pricing`, and normalises trailing slashes. `public/sitemap.xml` lists the
+four crawlable URLs.
+
+## Pricing
+
+The public price list on the landing page comes from `src/lib/pricing.ts`,
+which mirrors `fluxcode-app/src/lib/subscription.ts` → `TIER_CONFIG`.
+`src/lib/pricing.test.ts` reads the app file when the app repo is checked
+out next to this one and fails if the two drift. Checkout itself happens in
+the desktop app (Creem.io is the merchant of record); the site never
+initiates a checkout.
 
 ## Environment
 

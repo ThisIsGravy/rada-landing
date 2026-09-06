@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { navigateToRoute } from "./siteNavigation";
+import { routePath } from "./siteNavigation";
 import RadaLogoMark from "./components/RadaLogoMark";
 import RadaWordmark from "./components/RadaWordmark";
 
@@ -101,10 +101,10 @@ export default function CheckoutSuccess() {
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-10">
         <header className="sticky top-0 z-20 rounded-full border border-[#333] bg-[#0e0e0e]/80 px-4 py-3 backdrop-blur-xl">
           <nav className="flex items-center justify-between gap-4">
-            <button
-              type="button"
-              onClick={() => navigateToRoute("landing")}
-              className="flex items-center gap-3 border-0 bg-transparent p-0 text-left"
+            <a
+              href={routePath("landing")}
+              aria-label="Rada home"
+              className="flex items-center gap-3 border-0 bg-transparent p-0 text-left no-underline"
             >
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#333] bg-white/[0.03]">
                 <RadaLogoMark className="h-9 w-9 object-contain select-none" />
@@ -113,7 +113,7 @@ export default function CheckoutSuccess() {
                 className="h-14 w-[188px] object-contain select-none max-sm:hidden sm:w-[208px]"
                 showMark={false}
               />
-            </button>
+            </a>
 
             <div className="hidden rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-blue-300 sm:inline-flex">
               Payment received
