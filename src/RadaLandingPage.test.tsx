@@ -83,4 +83,17 @@ describe("RadaLandingPage", () => {
     expect(text).toContain(`Pro Annual — $${pro.annualPriceUsd} per year`);
     expect(text).toContain("Creem.io");
   });
+
+  it("states the same 14-day refund window as the Terms, which also carry the withdrawal waiver", () => {
+    render(<RadaLandingPage />);
+    expect(screen.getByText(/within 14 days of the original charge/i)).toBeInTheDocument();
+
+    const { container } = render(<Terms />);
+    const terms = container.textContent ?? "";
+    expect(terms).toContain("within fourteen (14) days of the original charge");
+    expect(terms).toContain("after the 14-day window the Ultra Lifetime purchase is final");
+    expect(terms).not.toMatch(/thirty \(30\) days of (the original charge|purchase)/);
+    expect(terms).toContain("Right of withdrawal and its waiver");
+    expect(terms).toContain("lose your statutory right of withdrawal");
+  });
 });

@@ -111,12 +111,13 @@ const sections: Section[] = [
         <p className="mt-4 text-white">(b) Refunds.</p>
         <p>
           Pro Monthly, Ultra Monthly, and Pro Annual purchases may be refunded
-          within thirty (30) days of the original charge by emailing
+          within fourteen (14) days of the original charge by emailing
           billing@userada.dev. The Ultra Lifetime tier may be refunded within
-          thirty (30) days of purchase; <span className="text-white">after
-          the 30-day window the Ultra Lifetime purchase is final and
+          fourteen (14) days of purchase; <span className="text-white">after
+          the 14-day window the Ultra Lifetime purchase is final and
           non-refundable</span> under any circumstances, including any future
-          discontinuation of the Service.
+          discontinuation of the Service. Refunds are issued by Creem to the
+          original payment method.
         </p>
 
         <p className="mt-4 text-white">(c) Merchant of Record.</p>
@@ -133,6 +134,23 @@ const sections: Section[] = [
           changes affecting an existing renewing subscription will be
           communicated by email at least thirty (30) days before they take
           effect.
+        </p>
+
+        <p className="mt-4 text-white">(e) Right of withdrawal and its waiver.</p>
+        <p>
+          If you are a consumer in the European Economic Area or the United
+          Kingdom, you may have a statutory right to withdraw from a contract
+          for digital services within fourteen (14) days without giving a
+          reason. The Service is a digital service that begins immediately
+          upon purchase. <span className="text-white">By completing checkout
+          you expressly request that we begin providing the Service
+          immediately, and you acknowledge that you thereby lose your
+          statutory right of withdrawal once performance has begun.</span>{" "}
+          You confirm this by ticking the acknowledgement box on the Creem
+          checkout page; the purchase cannot be completed without it. This
+          waiver does not affect the voluntary 14-day refund window in
+          Section 4(b), which we offer in addition to, and independently of,
+          any statutory right.
         </p>
       </>
     ),
@@ -225,7 +243,7 @@ const sections: Section[] = [
         </p>
         <p className="mt-3">
           Upon termination, your right to access the Service ends immediately.
-          Sections 4(b), 6, 7, and 9 survive termination.
+          Sections 4(b), 4(e), 6, 7, and 9 survive termination.
         </p>
       </>
     ),
@@ -297,7 +315,7 @@ export default function Terms() {
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
             Terms of Service
           </h1>
-          <p className="mt-4 text-sm text-zinc-500">Last updated: 2026-04-25</p>
+          <p className="mt-4 text-sm text-zinc-500">Last updated: 2026-09-07</p>
 
           <div
             role="note"

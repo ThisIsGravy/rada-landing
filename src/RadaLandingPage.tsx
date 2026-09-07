@@ -681,7 +681,7 @@ export default function RadaLandingPage() {
             </p>
             <p>
               Monthly and annual plans renew automatically until cancelled.
-              Refunds are available within 30 days of the original charge — see
+              Refunds are available within 14 days of the original charge — see
               the{" "}
               <a
                 href={`${routePath("terms")}#subscriptions`}
