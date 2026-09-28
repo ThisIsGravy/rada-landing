@@ -398,7 +398,7 @@ function WaitlistForm({
         <button
           type="submit"
           disabled={state === "submitting"}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-gradient-to-r from-[#5b8def] to-[#7bc8ff] px-5 py-2.5 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition hover:-translate-y-px hover:from-[#7bc8ff] hover:to-[#8dd4ff] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-gradient-to-r from-[#5b8def] to-[#7bc8ff] px-5 py-2.5 text-sm font-semibold text-[#0e0e0e] shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition hover:-translate-y-px hover:from-[#7bc8ff] hover:to-[#8dd4ff] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {state === "submitting" ? submittingLabel : ctaLabel}
         </button>
@@ -443,7 +443,7 @@ export default function RadaLandingPage() {
       <div className="relative z-10 mx-auto w-full max-w-[760px] px-6">
         <nav aria-label="Primary" className="flex items-center justify-between pt-7">
           <a
-            href="#/"
+            href={routePath("landing")}
             aria-label="Rada home"
             className="flex items-center gap-3 text-[18px] font-bold tracking-[-0.4px] text-white no-underline"
           >
@@ -531,7 +531,7 @@ export default function RadaLandingPage() {
               {WAITLIST_COUNT != null ? (
                 <>
                   <span className="font-semibold text-zinc-200">
-                    {WAITLIST_COUNT.toLocaleString()} developers
+                    {WAITLIST_COUNT.toLocaleString("en-US")} developers
                   </span>{" "}
                   on the waitlist — shipping soon
                 </>
@@ -795,7 +795,7 @@ export default function RadaLandingPage() {
 
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1f1f23] py-8 pb-10 max-[560px]:flex-col max-[560px]:items-start">
           <a
-            href="#/"
+            href={routePath("landing")}
             aria-label="Rada home"
             className="flex items-center gap-2 text-sm font-semibold text-zinc-400 no-underline transition hover:text-zinc-200"
           >
