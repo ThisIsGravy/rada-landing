@@ -4,8 +4,9 @@ import RadaLogoMark from "./components/RadaLogoMark";
 import RadaWordmark from "./components/RadaWordmark";
 
 // Deep-link target the Tauri build registers as a custom URL scheme.
-// The desktop app reads `rada://workspace` and routes the user back into
-// the workspace view after a successful purchase redirect.
+// Opening it only launches Rada (or brings it to the foreground); the app
+// does not route on the `workspace` path, so the user lands wherever the
+// app was last left.
 const APP_DEEP_LINK = "rada://workspace";
 
 // Auto-redirect window. Kept short so the Tauri app can resume quickly,
@@ -80,11 +81,16 @@ export default function CheckoutSuccess() {
     [],
   );
 
+  // A real Creem redirect always carries checkout_id plus order_id or
+  // subscription_id. With none of them this is a bare visit, so show a
+  // neutral state instead of claiming a payment and auto-launching the app.
+  const hasCheckout = Boolean(checkoutId || orderId || subscriptionId);
+
   const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_SECONDS);
   const [hasOpened, setHasOpened] = useState(false);
 
   useEffect(() => {
-    if (hasOpened) return;
+    if (hasOpened || !hasCheckout) return;
     if (secondsLeft <= 0) {
       setHasOpened(true);
       openDeepLink();
@@ -94,7 +100,7 @@ export default function CheckoutSuccess() {
       setSecondsLeft((value) => value - 1);
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [secondsLeft, hasOpened]);
+  }, [secondsLeft, hasOpened, hasCheckout]);
 
   const tierLabel = tier ?? "Rada";
   const headline =
@@ -103,6 +109,19 @@ export default function CheckoutSuccess() {
       : tier
         ? `Welcome to ${tier}!`
         : "Welcome to Rada.";
+
+  const openButton = (
+    <button
+      type="button"
+      onClick={() => {
+        setHasOpened(true);
+        openDeepLink();
+      }}
+      className="inline-flex items-center justify-center rounded-full border border-blue-500/30 bg-blue-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-700"
+    >
+      Open Rada
+    </button>
+  );
 
   return (
     <main className="relative min-h-[100dvh] bg-[#0e0e0e] text-zinc-100">
@@ -128,96 +147,116 @@ export default function CheckoutSuccess() {
               />
             </a>
 
-            <div className="hidden rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-blue-300 sm:inline-flex">
-              Payment received
-            </div>
+            {hasCheckout && (
+              <div className="hidden rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-blue-300 sm:inline-flex">
+                Payment received
+              </div>
+            )}
           </nav>
         </header>
 
         <section className="flex flex-1 items-center justify-center py-16 sm:py-20">
           <div className="w-full max-w-2xl rounded-[28px] border border-[#333] bg-[#121212] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:p-12">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/30 bg-blue-500/10 text-blue-300">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-7 w-7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 12.5l4.5 4.5L19 7.5" />
-              </svg>
-            </div>
+            {hasCheckout ? (
+              <>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/30 bg-blue-500/10 text-blue-300">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-7 w-7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                </div>
 
-            <div className="mt-6 text-[11px] font-medium uppercase tracking-[0.24em] text-blue-400">
-              Checkout complete
-            </div>
-            <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-              {headline}
-            </h1>
-            <p className="mt-4 text-pretty text-base leading-7 text-zinc-400">
-              Thanks for upgrading. Your payment to Creem went through and
-              your {tierLabel} access will activate the moment our webhook
-              processes the confirmation. The desktop app may take a few
-              seconds to reflect the new tier — if it still shows the old
-              plan after a minute, restart Rada or sign out and back in.
-            </p>
+                <div className="mt-6 text-[11px] font-medium uppercase tracking-[0.24em] text-blue-400">
+                  Checkout complete
+                </div>
+                <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
+                  {headline}
+                </h1>
+                <p className="mt-4 text-pretty text-base leading-7 text-zinc-400">
+                  Thanks for upgrading. Your payment to Creem went through and
+                  your {tierLabel} access will activate the moment our webhook
+                  processes the confirmation. The desktop app may take a few
+                  seconds to reflect the new tier — if it still shows the old
+                  plan after a minute, restart Rada or sign out and back in.
+                </p>
 
-            <div className="mt-8 grid gap-4 rounded-2xl border border-[#222] bg-[#0f0f0f] p-5 text-sm">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-zinc-500">Tier</span>
-                <span className="text-white">
-                  {tier ?? "Awaiting webhook"}
-                </span>
-              </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-zinc-500">Checkout ID</span>
-                <span className="break-all text-right font-mono text-[12px] text-zinc-300">
-                  {checkoutId ?? "—"}
-                </span>
-              </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-zinc-500">
-                  {subscriptionId ? "Subscription ID" : "Order ID"}
-                </span>
-                <span className="break-all text-right font-mono text-[12px] text-zinc-300">
-                  {subscriptionId ?? orderId ?? "—"}
-                </span>
-              </div>
-            </div>
+                <div className="mt-8 grid gap-4 rounded-2xl border border-[#222] bg-[#0f0f0f] p-5 text-sm">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-zinc-500">Tier</span>
+                    <span className="text-white">
+                      {tier ?? "Awaiting webhook"}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-zinc-500">Checkout ID</span>
+                    <span className="break-all text-right font-mono text-[12px] text-zinc-300">
+                      {checkoutId ?? "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-zinc-500">
+                      {subscriptionId ? "Subscription ID" : "Order ID"}
+                    </span>
+                    <span className="break-all text-right font-mono text-[12px] text-zinc-300">
+                      {subscriptionId ?? orderId ?? "—"}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-sm text-zinc-400">
-                {hasOpened
-                  ? "Opening Rada now…"
-                  : `Returning you to Rada in ${secondsLeft}s…`}
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setHasOpened(true);
-                  openDeepLink();
-                }}
-                className="inline-flex items-center justify-center rounded-full border border-blue-500/30 bg-blue-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-400"
-              >
-                Open Rada
-              </button>
-            </div>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm text-zinc-400">
+                    {hasOpened
+                      ? "Opening Rada now…"
+                      : `Returning you to Rada in ${secondsLeft}s…`}
+                  </div>
+                  {openButton}
+                </div>
 
-            <p className="mt-6 text-xs leading-6 text-zinc-500">
-              Subscription activation is finalized server-side via the Creem
-              webhook. This page does not (and cannot) verify the payment on
-              its own. If your tier hasn't updated within a few minutes, email{" "}
-              <a
-                href="mailto:billing@userada.dev"
-                className="text-blue-300 underline-offset-4 hover:underline"
-              >
-                billing@userada.dev
-              </a>{" "}
-              with the checkout ID above.
-            </p>
+                <p className="mt-6 text-xs leading-6 text-zinc-500">
+                  Subscription activation is finalized server-side via the Creem
+                  webhook. This page does not (and cannot) verify the payment on
+                  its own. If your tier hasn't updated within a few minutes, email{" "}
+                  <a
+                    href="mailto:billing@userada.dev"
+                    className="text-blue-300 underline-offset-4 hover:underline"
+                  >
+                    billing@userada.dev
+                  </a>{" "}
+                  with the checkout ID above.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-blue-400">
+                  Checkout
+                </div>
+                <h1 className="mt-3 text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
+                  No checkout found — open Rada to check your plan
+                </h1>
+                <p className="mt-4 text-pretty text-base leading-7 text-zinc-400">
+                  This link doesn't include a checkout reference, so there is
+                  nothing to confirm here. Your current plan is always shown in
+                  the Rada desktop app. If you were charged and your plan
+                  hasn't changed, email{" "}
+                  <a
+                    href="mailto:billing@userada.dev"
+                    className="text-blue-300 underline-offset-4 hover:underline"
+                  >
+                    billing@userada.dev
+                  </a>
+                  .
+                </p>
+                <div className="mt-8">{openButton}</div>
+              </>
+            )}
           </div>
         </section>
       </div>

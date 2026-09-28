@@ -47,7 +47,7 @@ export const ROUTE_META: Record<SitePageRoute, { title: string; description: str
   enterprise: {
     title: "Rada Enterprise — Local-First AI Coding for Teams",
     description:
-      "Pooled compute limits, zero-data-retention cloud routing, and local AI models that run on your own machines by default.",
+      "Local AI models that run on your own machines by default, per-seat burst caps, and cloud routing restricted to providers that don't store or train on your prompts.",
   },
   terms: {
     title: "Terms of Service — Rada",
@@ -60,8 +60,9 @@ export const ROUTE_META: Record<SitePageRoute, { title: string; description: str
       "Rada Privacy Policy: what we collect, what we never collect, sub-processors, retention, and your GDPR rights.",
   },
   checkoutSuccess: {
-    title: "Checkout complete — Rada",
-    description: "Your Rada subscription is active. Return to the desktop app to continue.",
+    // Neutral: the same route shows the "no checkout found" state.
+    title: "Checkout — Rada",
+    description: "Checkout status for your Rada plan. Your current plan is always shown in the desktop app.",
   },
 };
 

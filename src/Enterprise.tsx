@@ -33,17 +33,17 @@ const enterpriseFeatures: EnterpriseFeature[] = [
     eyebrow: "Absolute Privacy",
     title: "Protect proprietary code by default.",
     description:
-      "Run lightweight models locally so proprietary code never leaves your network. Cloud routing is opt-in per session and uses OpenRouter's zero-retention endpoints. BYOK (Bring Your Own Key) is on the enterprise roadmap.",
+      "Run lightweight models locally so proprietary code never leaves your network. Cloud routing is opt-in per session and restricted to providers that don't store or train on your prompts. BYOK (Bring Your Own Key) is on the enterprise roadmap.",
   },
   {
     eyebrow: "Predictable Team Capacity",
     title: "No surprise bills. No surprise throttling.",
     description:
-      "Every seat ships with a daily burst cap. Admins see who's routing where, so capacity is easy to plan and impossible to over-spend. Team-level quota pooling is on the roadmap.",
+      "Every seat ships with a daily burst cap, so capacity is easy to plan and impossible to over-spend. Team-level quota pooling and an admin view of cloud usage are on the roadmap.",
   },
   {
     eyebrow: "Centralized Billing & SSO",
-    title: "Admin-friendly controls with clean rollout.",
+    title: "Simple sign-in with clean rollout.",
     description:
       "One invoice. Google and GitHub sign-in today; SAML SSO on request. Easy onboarding for engineering teams.",
   },
@@ -198,7 +198,7 @@ function EnterpriseForm() {
           <button
             type="submit"
             disabled={state === "submitting"}
-            className="inline-flex w-full items-center justify-center rounded-full border border-blue-500/30 bg-blue-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-400 disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center rounded-full border border-blue-500/30 bg-blue-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-wait disabled:opacity-60"
           >
             {state === "submitting" ? "Sending…" : "Contact Sales"}
           </button>
@@ -289,14 +289,16 @@ export default function Enterprise() {
             </div>
 
             <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-6xl">
-              Ship faster. Protect your IP. Scale infinitely.
+              Ship faster. Protect your IP. Keep costs predictable.
             </h1>
 
             <p className="mt-6 max-w-2xl text-pretty text-base leading-8 text-zinc-400 sm:text-lg">
-              Rada Enterprise gives your engineering team pooled compute limits,
-              zero-data-retention cloud routing, and local AI models that run on
-              your own machines by default — so code stays local unless you
-              explicitly opt a session into cloud routing.
+              Rada Enterprise gives your engineering team local AI models that
+              run on your own machines by default, per-seat burst caps, and cloud
+              routing restricted to providers that don't store or train on your
+              prompts — so code stays local unless you explicitly opt a session
+              into cloud routing. Pooled team limits and admin usage visibility
+              are on the roadmap.
             </p>
 
             <div
@@ -334,9 +336,10 @@ export default function Enterprise() {
                   Security posture
                 </div>
                 <div className="mt-2 text-sm leading-7 text-zinc-300">
-                  Private local inference, opt-in zero-retention cloud routing,
-                  and centralized controls for every team that touches
-                  production code. (BYOK cloud isolation is on the roadmap.)
+                  Private local inference, opt-in cloud routing restricted to
+                  providers that don't store or train on your prompts, and
+                  per-seat burst caps. (Centralized admin controls and BYOK cloud
+                  isolation are on the roadmap.)
                 </div>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">
