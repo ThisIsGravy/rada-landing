@@ -52,7 +52,7 @@ export const ROUTE_META: Record<SitePageRoute, { title: string; description: str
   terms: {
     title: "Terms of Service — Rada",
     description:
-      "Rada Terms of Service: beta status, subscriptions, pricing, billing, refunds, acceptable use, and governing law.",
+      "Rada Terms of Service: beta status, subscriptions, Ultra Lifetime, daily credits and fair use, billing, refunds, acceptable use, and governing law.",
   },
   privacy: {
     title: "Privacy Policy — Rada",

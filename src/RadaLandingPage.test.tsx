@@ -1,8 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import RadaLandingPage from "./RadaLandingPage";
+import { renderRoute } from "./SiteRouter";
 import Terms from "./Terms";
-import { PRICING_TIERS } from "./lib/pricing";
+import { LIFETIME_LADDER, PRICING_TIERS, formatUsd } from "./lib/pricing";
+import { ROUTE_META, ROUTE_PATHS, type SitePageRoute } from "./siteNavigation";
 
 describe("RadaLandingPage", () => {
   it("renders the waitlist headline and CTA", () => {
@@ -70,7 +72,21 @@ describe("RadaLandingPage", () => {
     render(<RadaLandingPage />);
     const pricing = screen.getByRole("region", { name: /^pricing$/i });
     expect(within(pricing).queryByText(/lifetime/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/\$550|\$650|\$750|\$1,000/)).not.toBeInTheDocument();
+    const page = document.body.textContent ?? "";
+    for (const { priceUsd } of LIFETIME_LADDER) {
+      expect(page).not.toContain(formatUsd(priceUsd));
+    }
+    // Retired ladder figures and seat counts must not resurface either.
+    expect(page).not.toMatch(/\$550|\$650|\$750|1,430|358 seats/);
+  });
+
+  it("describes Ultra Lifetime with the Terms definition and links to it", () => {
+    render(<RadaLandingPage />);
+    expect(screen.getByText(/for as long as Rada operates its managed cloud service/i)).toBeInTheDocument();
+    const lifetimeLink = screen
+      .getAllByRole("link", { name: /terms of service/i })
+      .find((a) => a.getAttribute("href") === "/terms#ultra-lifetime");
+    expect(lifetimeLink).toBeDefined();
   });
 
   it("matches the prices stated in the Terms of Service §4", () => {
@@ -91,9 +107,28 @@ describe("RadaLandingPage", () => {
     const { container } = render(<Terms />);
     const terms = container.textContent ?? "";
     expect(terms).toContain("within fourteen (14) days of the original charge");
-    expect(terms).toContain("after the 14-day window the Ultra Lifetime purchase is final");
+    expect(terms).toContain("An Ultra Lifetime purchase may be refunded in full within fourteen (14) days of purchase");
+    expect(terms).not.toMatch(/non-refundable|under any circumstances/i);
     expect(terms).not.toMatch(/thirty \(30\) days of (the original charge|purchase)/);
     expect(terms).toContain("Right of withdrawal and its waiver");
     expect(terms).toContain("lose your statutory right of withdrawal");
+  });
+});
+
+describe("site copy", () => {
+  // Ultra Lifetime is defined as "for as long as Rada operates its managed
+  // cloud service" (Terms §4(f)(i)). No page may promise more than that.
+  const routes = Object.keys(ROUTE_PATHS) as SitePageRoute[];
+
+  it.each(routes)("the %s page never says \"forever\"", (route) => {
+    const { container, unmount } = render(renderRoute(route));
+    expect(container.textContent ?? "").not.toMatch(/forever/i);
+    unmount();
+  });
+
+  it("no route title or description says \"forever\"", () => {
+    for (const meta of Object.values(ROUTE_META)) {
+      expect(`${meta.title} ${meta.description}`).not.toMatch(/forever/i);
+    }
   });
 });

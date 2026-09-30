@@ -232,7 +232,7 @@ function PricingCard({ plan }: { plan: PricingTier }) {
           {formatUsd(plan.monthlyPriceUsd)}
         </span>
         <span className="text-sm text-zinc-400">
-          {isPaid ? `${CURRENCY} / month` : `${CURRENCY} · forever`}
+          {`${CURRENCY} / month`}
         </span>
       </p>
       {plan.annualPriceUsd != null ? (
@@ -726,10 +726,18 @@ export default function RadaLandingPage() {
               <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-zinc-300">
                 Beta testers help us shape Rada, so beta testers are first
                 in line when the one-time Ultra Lifetime tier opens for
-                sale. Lifetime is one payment for cloud access at the Ultra
-                level — forever — and as a beta participant you'll be
-                invited before it goes public. Lifetime pricing will be
-                published here when it becomes available to buy.
+                sale. Lifetime is one payment for Ultra-level cloud access
+                for as long as Rada operates its managed cloud service, with
+                the daily credits and fair-use limits set out in our{" "}
+                <a
+                  href={`${routePath("terms")}#ultra-lifetime`}
+                  className="text-zinc-100 underline underline-offset-2 hover:text-white"
+                >
+                  Terms of Service
+                </a>
+                . As a beta participant you'll be invited before it goes
+                public. Lifetime pricing will be published here when it
+                becomes available to buy.
               </p>
 
               <ul className="mt-5 grid grid-cols-1 gap-3 text-sm text-zinc-200 sm:grid-cols-3">
