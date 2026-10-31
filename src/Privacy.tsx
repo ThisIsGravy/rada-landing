@@ -31,13 +31,23 @@ const processors: Processor[] = [
   },
   {
     name: "Formspree",
-    role: "Processes the waitlist and enterprise-sales forms on the marketing site (the email address, company, team size, and any message you submit) and forwards them to Rada.",
+    role: "Processes the waitlist and enterprise-sales forms on the marketing site (the email address, company, team size, and any message you submit) and forwards them to Rada. The waitlist form also sends the referring page URL (if your browser provides one) and any UTM campaign parameters present in the page link.",
     region: "United States. Form submissions are transmitted to and stored by Formspree under its own data-processing terms.",
   },
   {
     name: "PostHog",
     role: "Product analytics for opt-in, anonymous in-app usage events. Only collected after you grant telemetry consent; no prompts, code, or API keys are sent.",
     region: "European Union (PostHog EU region).",
+  },
+  {
+    name: "Vercel",
+    role: "Hosting and content delivery for the marketing site at userada.dev. Processes your IP address and standard request logs (such as the requested URL, user agent, and timestamp) when you visit the site.",
+    region: "Global edge network, governed by Vercel's own data-processing terms.",
+  },
+  {
+    name: "Titan",
+    role: "Email hosting for @userada.dev mailboxes. Stores the emails you send to us, including your email address and message contents, and our replies.",
+    region: "Determined by Titan's own data-processing terms.",
   },
 ];
 
@@ -119,8 +129,10 @@ const sections: Section[] = [
         </ul>
         <p className="mt-3">
           Cloud requests forwarded through OpenRouter are subject to
-          OpenRouter's own terms, but Rada does not retain a copy of the
-          prompt or output content after the request completes.
+          OpenRouter's own terms and are restricted to upstream providers
+          that, under OpenRouter's provider data policies, do not store or
+          train on your prompts. Rada does not retain a copy of the prompt or
+          output content after the request completes.
         </p>
       </>
     ),
@@ -335,7 +347,7 @@ export default function Privacy() {
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
             Privacy Policy
           </h1>
-          <p className="mt-4 text-sm text-zinc-500">Last updated: 2026-04-25</p>
+          <p className="mt-4 text-sm text-zinc-500">Last updated: 2026-09-27</p>
 
           <div
             role="note"

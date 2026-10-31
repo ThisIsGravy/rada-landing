@@ -55,4 +55,15 @@ describe("CheckoutSuccess", () => {
     expect(screen.getByText("Order ID")).toBeInTheDocument();
     expect(screen.getByText("ord_456")).toBeInTheDocument();
   });
+
+  it("shows a neutral state instead of a payment claim when no checkout ids are present", () => {
+    window.history.replaceState(null, "", "/checkout/success");
+    render(<CheckoutSuccess />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "No checkout found — open Rada to check your plan",
+    );
+    expect(screen.queryByText("Payment received")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Returning you to Rada/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Rada" })).toBeInTheDocument();
+  });
 });
