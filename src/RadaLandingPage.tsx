@@ -84,7 +84,7 @@ const featureCards: FeatureCard[] = [
     icon: "review",
     title: "Persistent memory",
     description:
-      "Context, decisions, and code patterns survive session restarts. Your AI assistant actually knows your codebase without being reminded every time.",
+      "Your AGENTS.md, your stack and style, and what you kept last time go into every run, per project. Rada finds the related files itself, so you don't re-explain your codebase.",
     accent: "blue",
   },
 ];
