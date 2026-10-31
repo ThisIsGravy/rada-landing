@@ -113,8 +113,8 @@ const comparisonRows: ComparisonRow[] = [
   },
   {
     feature: "Session memory",
-    competitors: "Resets on close",
-    rada: "Persists across sessions",
+    competitors: "Rules files, some auto-memory",
+    rada: "Automatic, per project, works offline",
   },
 ];
 
