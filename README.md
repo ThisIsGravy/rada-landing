@@ -56,7 +56,5 @@ initiates a checkout.
 
 | Var | Purpose |
 |-----|---------|
-| `VITE_SUPABASE_URL` | Supabase project URL (publishable, safe to ship) |
-| `VITE_SUPABASE_ANON_KEY` | Supabase publishable key (RLS-gated on the backend) |
 | `VITE_APP_URL` | Production URL of the Rada desktop app; "Start Building" / "Sign in" CTAs point here |
 | `VITE_SENTRY_DSN` | Optional — Sentry DSN for frontend error reporting |
